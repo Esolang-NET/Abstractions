@@ -1,0 +1,47 @@
+name: build
+
+on:
+  push:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+    - '**.slnx'
+    - '.github/workflows/**'
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  NUGET_SOURCE: 'https://api.nuget.org/v3/index.json'
+
+jobs:
+  build:
+    name: build-${{matrix.os}}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore --source "${{ env.NUGET_SOURCE }}"
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Pack
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: |
+        dotnet pack -o artifacts/
+
+    - uses: actions/upload-artifact@v4
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      with:
+        name: artifacts
+        path: artifacts
