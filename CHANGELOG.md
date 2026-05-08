@@ -6,6 +6,10 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+### Changed
+
+- `Esolang.Processor.Abstractions`: refined NuGet `PackageTags` to improve discoverability (`esolang;processor;abstractions`).
+
 ## [1.0.0] - 2026-05-07
 
 ### Added
