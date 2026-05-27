@@ -22,20 +22,10 @@ public readonly struct KnownTypes
     public readonly INamedTypeSymbol? CancellationToken;
     public readonly INamedTypeSymbol? ILogger;
     public readonly INamedTypeSymbol? ILoggerT;
-    
-    // Brainfuck compatibility
-    public readonly INamedTypeSymbol? TaskInt;
-    public readonly INamedTypeSymbol? TaskString;
-    public readonly INamedTypeSymbol? ValueTaskInt;
-    public readonly INamedTypeSymbol? ValueTaskString;
-    public readonly INamedTypeSymbol? IEnumerableByte;
-    public readonly INamedTypeSymbol? IAsyncEnumerableByte;
 
     public KnownTypes(Compilation compilation)
     {
         String = compilation.GetSpecialType(SpecialType.System_String);
-        var byteSymbol = compilation.GetSpecialType(SpecialType.System_Byte);
-        var intSymbol = compilation.GetSpecialType(SpecialType.System_Int32);
         
         Task = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task");
         TaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task`1");
@@ -50,48 +40,37 @@ public readonly struct KnownTypes
         CancellationToken = compilation.GetBestTypeByMetadataName("System.Threading.CancellationToken");
         ILogger = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
         ILoggerT = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
-
-        TaskInt = TaskT?.Construct(intSymbol);
-        TaskString = TaskT?.Construct(String);
-        ValueTaskInt = ValueTaskT?.Construct(intSymbol);
-        ValueTaskString = ValueTaskT?.Construct(String);
-        IEnumerableByte = IEnumerableT?.Construct(byteSymbol);
-        IAsyncEnumerableByte = IAsyncEnumerableT?.Construct(byteSymbol);
-    }
-
-    private static ITypeSymbol? Unwrap(ITypeSymbol? type)
-    {
-        if (type is INamedTypeSymbol namedType && namedType.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T)
-        {
-            return namedType.TypeArguments[0];
-        }
-        return type;
     }
 
     private static bool EqualsDefinition(ITypeSymbol? type, ISymbol? symbol) => 
-        type != null && symbol != null && SymbolEqualityComparer.Default.Equals(Unwrap(type)?.OriginalDefinition, symbol);
+        type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type.OriginalDefinition, symbol);
     
     private static bool EqualsType(ITypeSymbol? type, ISymbol? symbol) => 
-        type != null && symbol != null && SymbolEqualityComparer.Default.Equals(Unwrap(type)?.WithNullableAnnotation(NullableAnnotation.None), symbol);
+        type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type, symbol);
 
-    public bool IsString(ITypeSymbol? type) => EqualsType(type, String);
+    public bool IsString(ITypeSymbol? type, bool? isNullable = null) => 
+        type != null && SymbolEqualityComparer.Default.Equals(type, String) && (isNullable == null || type.NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated));
+
     public bool IsTask(ITypeSymbol? type) => EqualsType(type, Task);
-    public bool IsTaskT(ITypeSymbol? type) => EqualsDefinition(type, TaskT);
+    public bool IsTaskT(ITypeSymbol? type, bool? isNullable = null)
+    {
+        if (type is not INamedTypeSymbol named || !SymbolEqualityComparer.Default.Equals(named.ConstructedFrom, TaskT)) return false;
+        return isNullable == null || named.TypeArguments[0].NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated);
+    }
     public bool IsValueTask(ITypeSymbol? type) => EqualsType(type, ValueTask);
-    public bool IsValueTaskT(ITypeSymbol? type) => EqualsDefinition(type, ValueTaskT);
+    public bool IsValueTaskT(ITypeSymbol? type, bool? isNullable = null)
+    {
+        if (type is not INamedTypeSymbol named || !SymbolEqualityComparer.Default.Equals(named.ConstructedFrom, ValueTaskT)) return false;
+        return isNullable == null || named.TypeArguments[0].NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated);
+    }
     public bool IsPipeReader(ITypeSymbol? type) => EqualsType(type, PipeReader);
     public bool IsPipeWriter(ITypeSymbol? type) => EqualsType(type, PipeWriter);
     public bool IsTextReader(ITypeSymbol? type) => EqualsType(type, TextReader);
     public bool IsTextWriter(ITypeSymbol? type) => EqualsType(type, TextWriter);
     public bool IsCancellationToken(ITypeSymbol? type) => EqualsType(type, CancellationToken);
     
-    // Brainfuck compatibility helpers
-    public bool IsTaskInt(ITypeSymbol? type) => EqualsType(type, TaskInt);
-    public bool IsTaskString(ITypeSymbol? type) => EqualsType(type, TaskString);
-    public bool IsValueTaskInt(ITypeSymbol? type) => EqualsType(type, ValueTaskInt);
-    public bool IsValueTaskString(ITypeSymbol? type) => EqualsType(type, ValueTaskString);
-    public bool IsIEnumerableByte(ITypeSymbol? type) => EqualsType(type, IEnumerableByte);
-    public bool IsIAsyncEnumerableByte(ITypeSymbol? type) => EqualsType(type, IAsyncEnumerableByte);
+    public bool IsTaskString(ITypeSymbol? type, bool? isNullable = null) => IsTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
+    public bool IsValueTaskString(ITypeSymbol? type, bool? isNullable = null) => IsValueTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
 #pragma warning restore CS1591
 }
 
