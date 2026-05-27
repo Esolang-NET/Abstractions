@@ -7,6 +7,10 @@
 		{
 			"path": "Processor.Abstractions",
 			"name": "Esolang.Processor.Abstractions"
+		},
+		{
+			"path": "Processor.Abstractions.Tests",
+			"name": "Esolang.Processor.Abstractions.Tests"
 		}
 	],
 	"settings": {
@@ -17,6 +21,7 @@
 			"**/.DS_Store": true,
 			"**/Thumbs.db": true,
 			"Processor.Abstractions": true,
+			"Processor.Abstractions.Tests": true
 		}
 	}
 }

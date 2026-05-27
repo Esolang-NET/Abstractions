@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Processor.Abstractions.Tests/">
+    <Project Path="Processor.Abstractions.Tests/Esolang.Processor.Abstractions.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Processor.Abstractions/" />
   <Folder Name="/ソリューション項目/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />

@@ -1,17 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Unified processor abstractions for esolang execution.</Description>
     <PackageId>Esolang.Processor.Abstractions</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>esolang;processor;abstractions</PackageTags>
+    <RootNamespace>Esolang.Processor</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.Pipelines" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+      <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
   </ItemGroup>
 
   <ItemGroup>
