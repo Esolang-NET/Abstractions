@@ -9,6 +9,8 @@ public readonly struct KnownTypes
 {
 #pragma warning disable CS1591
     public readonly INamedTypeSymbol? String;
+    public readonly INamedTypeSymbol? Byte;
+    public readonly INamedTypeSymbol? Int32;
     public readonly INamedTypeSymbol? Task;
     public readonly INamedTypeSymbol? TaskT;
     public readonly INamedTypeSymbol? ValueTask;
@@ -26,6 +28,8 @@ public readonly struct KnownTypes
     public KnownTypes(Compilation compilation)
     {
         String = compilation.GetSpecialType(SpecialType.System_String);
+        Byte = compilation.GetSpecialType(SpecialType.System_Byte);
+        Int32 = compilation.GetSpecialType(SpecialType.System_Int32);
 
         Task = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task");
         TaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task`1");
@@ -51,18 +55,24 @@ public readonly struct KnownTypes
     public bool IsString(ITypeSymbol? type, bool? isNullable = null) =>
         type != null && SymbolEqualityComparer.Default.Equals(type, String) && (isNullable == null || type.NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated));
 
+    public bool IsByte(ITypeSymbol? type) => EqualsType(type, Byte);
+    public bool IsInt32(ITypeSymbol? type) => EqualsType(type, Int32);
+
     public bool IsTask(ITypeSymbol? type) => EqualsType(type, Task);
     public bool IsTaskT(ITypeSymbol? type, bool? isNullable = null)
     {
-        if (type is not INamedTypeSymbol named || !SymbolEqualityComparer.Default.Equals(named.ConstructedFrom, TaskT)) return false;
+        if (type is not INamedTypeSymbol named || !EqualsDefinition(named, TaskT)) return false;
         return isNullable == null || named.TypeArguments[0].NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated);
     }
     public bool IsValueTask(ITypeSymbol? type) => EqualsType(type, ValueTask);
     public bool IsValueTaskT(ITypeSymbol? type, bool? isNullable = null)
     {
-        if (type is not INamedTypeSymbol named || !SymbolEqualityComparer.Default.Equals(named.ConstructedFrom, ValueTaskT)) return false;
+        if (type is not INamedTypeSymbol named || !EqualsDefinition(named, ValueTaskT)) return false;
         return isNullable == null || named.TypeArguments[0].NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated);
     }
+    public bool IsIEnumerableT(ITypeSymbol? type) => EqualsDefinition(type, IEnumerableT);
+    public bool IsIAsyncEnumerableT(ITypeSymbol? type) => EqualsDefinition(type, IAsyncEnumerableT);
+
     public bool IsPipeReader(ITypeSymbol? type) => EqualsType(type, PipeReader);
     public bool IsPipeWriter(ITypeSymbol? type) => EqualsType(type, PipeWriter);
     public bool IsTextReader(ITypeSymbol? type) => EqualsType(type, TextReader);
@@ -71,6 +81,23 @@ public readonly struct KnownTypes
 
     public bool IsTaskString(ITypeSymbol? type, bool? isNullable = null) => IsTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
     public bool IsValueTaskString(ITypeSymbol? type, bool? isNullable = null) => IsValueTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
+
+    public bool IsTaskInt32(ITypeSymbol? type) => IsTaskT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Int32;
+    public bool IsValueTaskInt32(ITypeSymbol? type) => IsValueTaskT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Int32;
+
+    public bool IsIEnumerableByte(ITypeSymbol? type) => IsIEnumerableT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Byte;
+    public bool IsIAsyncEnumerableByte(ITypeSymbol? type) => IsIAsyncEnumerableT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Byte;
+
+    public bool IsLogger(ITypeSymbol? type)
+    {
+        if (type == null) return false;
+        if (EqualsType(type, ILogger) || EqualsDefinition(type, ILoggerT)) return true;
+        foreach (var iface in type.AllInterfaces)
+        {
+            if (EqualsType(iface, ILogger) || EqualsDefinition(iface, ILoggerT)) return true;
+        }
+        return false;
+    }
 #pragma warning restore CS1591
 }
 
