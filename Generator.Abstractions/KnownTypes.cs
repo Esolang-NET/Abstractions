@@ -26,7 +26,7 @@ public readonly struct KnownTypes
     public KnownTypes(Compilation compilation)
     {
         String = compilation.GetSpecialType(SpecialType.System_String);
-        
+
         Task = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task");
         TaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task`1");
         ValueTask = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.ValueTask");
@@ -42,13 +42,13 @@ public readonly struct KnownTypes
         ILoggerT = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
     }
 
-    private static bool EqualsDefinition(ITypeSymbol? type, ISymbol? symbol) => 
+    private static bool EqualsDefinition(ITypeSymbol? type, ISymbol? symbol) =>
         type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type.OriginalDefinition, symbol);
-    
-    private static bool EqualsType(ITypeSymbol? type, ISymbol? symbol) => 
+
+    private static bool EqualsType(ITypeSymbol? type, ISymbol? symbol) =>
         type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type, symbol);
 
-    public bool IsString(ITypeSymbol? type, bool? isNullable = null) => 
+    public bool IsString(ITypeSymbol? type, bool? isNullable = null) =>
         type != null && SymbolEqualityComparer.Default.Equals(type, String) && (isNullable == null || type.NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated));
 
     public bool IsTask(ITypeSymbol? type) => EqualsType(type, Task);
@@ -68,7 +68,7 @@ public readonly struct KnownTypes
     public bool IsTextReader(ITypeSymbol? type) => EqualsType(type, TextReader);
     public bool IsTextWriter(ITypeSymbol? type) => EqualsType(type, TextWriter);
     public bool IsCancellationToken(ITypeSymbol? type) => EqualsType(type, CancellationToken);
-    
+
     public bool IsTaskString(ITypeSymbol? type, bool? isNullable = null) => IsTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
     public bool IsValueTaskString(ITypeSymbol? type, bool? isNullable = null) => IsValueTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
 #pragma warning restore CS1591
