@@ -22,10 +22,20 @@ public readonly struct KnownTypes
     public readonly INamedTypeSymbol? CancellationToken;
     public readonly INamedTypeSymbol? ILogger;
     public readonly INamedTypeSymbol? ILoggerT;
+    
+    // Brainfuck compatibility
+    public readonly INamedTypeSymbol? TaskInt;
+    public readonly INamedTypeSymbol? TaskString;
+    public readonly INamedTypeSymbol? ValueTaskInt;
+    public readonly INamedTypeSymbol? ValueTaskString;
+    public readonly INamedTypeSymbol? IEnumerableByte;
+    public readonly INamedTypeSymbol? IAsyncEnumerableByte;
 
     public KnownTypes(Compilation compilation)
     {
         String = compilation.GetSpecialType(SpecialType.System_String);
+        var byteSymbol = compilation.GetSpecialType(SpecialType.System_Byte);
+        var intSymbol = compilation.GetSpecialType(SpecialType.System_Int32);
         
         Task = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task");
         TaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task`1");
@@ -40,6 +50,13 @@ public readonly struct KnownTypes
         CancellationToken = compilation.GetBestTypeByMetadataName("System.Threading.CancellationToken");
         ILogger = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
         ILoggerT = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
+
+        TaskInt = TaskT?.Construct(intSymbol);
+        TaskString = TaskT?.Construct(String);
+        ValueTaskInt = ValueTaskT?.Construct(intSymbol);
+        ValueTaskString = ValueTaskT?.Construct(String);
+        IEnumerableByte = IEnumerableT?.Construct(byteSymbol);
+        IAsyncEnumerableByte = IAsyncEnumerableT?.Construct(byteSymbol);
     }
 
     private static ITypeSymbol? Unwrap(ITypeSymbol? type)
@@ -62,18 +79,19 @@ public readonly struct KnownTypes
     public bool IsTaskT(ITypeSymbol? type) => EqualsDefinition(type, TaskT);
     public bool IsValueTask(ITypeSymbol? type) => EqualsType(type, ValueTask);
     public bool IsValueTaskT(ITypeSymbol? type) => EqualsDefinition(type, ValueTaskT);
-    public bool IsIEnumerableT(ITypeSymbol? type) => EqualsDefinition(type, IEnumerableT);
-    public bool IsIAsyncEnumerableT(ITypeSymbol? type) => EqualsDefinition(type, IAsyncEnumerableT);
     public bool IsPipeReader(ITypeSymbol? type) => EqualsType(type, PipeReader);
     public bool IsPipeWriter(ITypeSymbol? type) => EqualsType(type, PipeWriter);
     public bool IsTextReader(ITypeSymbol? type) => EqualsType(type, TextReader);
     public bool IsTextWriter(ITypeSymbol? type) => EqualsType(type, TextWriter);
     public bool IsCancellationToken(ITypeSymbol? type) => EqualsType(type, CancellationToken);
-    public bool IsILogger(ITypeSymbol? type) => EqualsType(type, ILogger);
-    public bool IsILoggerT(ITypeSymbol? type) => EqualsDefinition(type, ILoggerT);
     
-    public bool IsTaskString(ITypeSymbol? type) => IsTaskT(type) && ((INamedTypeSymbol)Unwrap(type)!).TypeArguments[0].SpecialType == SpecialType.System_String;
-    public bool IsValueTaskString(ITypeSymbol? type) => IsValueTaskT(type) && ((INamedTypeSymbol)Unwrap(type)!).TypeArguments[0].SpecialType == SpecialType.System_String;
+    // Brainfuck compatibility helpers
+    public bool IsTaskInt(ITypeSymbol? type) => EqualsType(type, TaskInt);
+    public bool IsTaskString(ITypeSymbol? type) => EqualsType(type, TaskString);
+    public bool IsValueTaskInt(ITypeSymbol? type) => EqualsType(type, ValueTaskInt);
+    public bool IsValueTaskString(ITypeSymbol? type) => EqualsType(type, ValueTaskString);
+    public bool IsIEnumerableByte(ITypeSymbol? type) => EqualsType(type, IEnumerableByte);
+    public bool IsIAsyncEnumerableByte(ITypeSymbol? type) => EqualsType(type, IAsyncEnumerableByte);
 #pragma warning restore CS1591
 }
 
