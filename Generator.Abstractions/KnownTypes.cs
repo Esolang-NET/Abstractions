@@ -1,11 +1,25 @@
+using Microsoft.CodeAnalysis;
+
 namespace Esolang.Generator;
 
 /// <summary>
-/// Provides commonly used types and constants for Esolang code generators.
+/// Provides a base structure for resolving types from a <see cref="Compilation"/>.
 /// </summary>
-public static class KnownTypes
+public readonly struct KnownTypes
 {
-    // ジェネレーター間で共有される基本的な型定義をここに配置します。
-    // 例:
-    // public const string GeneratedCodeAttribute = "System.CodeDom.Compiler.GeneratedCodeAttribute";
+    /// <summary>
+    /// Resolves the best <see cref="INamedTypeSymbol"/> for the specified metadata name.
+    /// </summary>
+    protected static INamedTypeSymbol? GetBestTypeByMetadataName(Compilation compilation, string metadataName)
+    {
+        var type = compilation.GetTypeByMetadataName(metadataName);
+        if (type != null) return type;
+
+        foreach (var assembly in compilation.SourceModule.ReferencedAssemblySymbols)
+        {
+            var found = assembly.GetTypeByMetadataName(metadataName);
+            if (found != null) return found;
+        }
+        return null;
+    }
 }
