@@ -15,4 +15,5 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+  <Project Path="Generator.Abstractions\Esolang.Generator.Abstractions.csproj" />
 </Solution>
