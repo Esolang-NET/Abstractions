@@ -6,6 +6,18 @@ namespace Esolang.Generator;
 /// <summary>
 /// Represents the result of binding a method signature for generation.
 /// </summary>
+/// <param name="IsValid">Whether the binding is successful.</param>
+/// <param name="ReturnKind">The return kind of the method.</param>
+/// <param name="InputKind">The input kind of the method.</param>
+/// <param name="OutputKind">The output kind of the method.</param>
+/// <param name="InputExpression">The expression to access the input (e.g., parameter name).</param>
+/// <param name="OutputExpression">The expression to access the output (e.g., parameter name).</param>
+/// <param name="CancellationTokenName">The name of the cancellation token parameter, if any.</param>
+/// <param name="LoggerExpression">The expression to access the logger (e.g., "loggerParam", "this._logger").</param>
+/// <param name="IsLoggerFromParameter">Whether the logger is obtained from a method parameter.</param>
+/// <param name="UnhandledParameters">Parameters that were not handled by the common binding logic.</param>
+/// <param name="ErrorId">The diagnostic error ID if the binding failed.</param>
+/// <param name="Location">The location associated with the error.</param>
 public record struct MethodSignatureBinding(
     bool IsValid,
     MethodReturnKind ReturnKind,

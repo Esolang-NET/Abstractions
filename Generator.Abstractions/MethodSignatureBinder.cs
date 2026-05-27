@@ -133,6 +133,9 @@ public static class MethodSignatureBinder
         return new MethodSignatureBinding(true, returnKind, inputKind, outputKind, inputExpr, outputExpr, cancellationTokenName, loggerExpression, isLoggerFromParameter, unhandledParameters);
     }
 
+    /// <summary>
+    /// Binds the return type symbol to a <see cref="MethodReturnKind"/>.
+    /// </summary>
     private static MethodReturnKind BindReturnKind(ITypeSymbol returnType, KnownTypes types)
     {
         if (returnType.SpecialType == SpecialType.System_Void) return MethodReturnKind.Void;
@@ -153,6 +156,9 @@ public static class MethodSignatureBinder
         return MethodReturnKind.Invalid;
     }
 
+    /// <summary>
+    /// Gets the default output kind based on the return kind.
+    /// </summary>
     private static MethodOutputKind BindDefaultOutputKind(MethodReturnKind returnKind) => returnKind switch
     {
         MethodReturnKind.String or MethodReturnKind.NullableString or MethodReturnKind.TaskString or MethodReturnKind.TaskNullableString or MethodReturnKind.ValueTaskString or MethodReturnKind.ValueTaskNullableString => MethodOutputKind.ReturnString,
@@ -161,12 +167,23 @@ public static class MethodSignatureBinder
         _ => MethodOutputKind.None
     };
 
+    /// <summary>
+    /// Gets a value indicating whether the return kind implies output is returned.
+    /// </summary>
     private static bool IsOutputReturning(MethodReturnKind returnKind) => returnKind switch
     {
         MethodReturnKind.String or MethodReturnKind.NullableString or MethodReturnKind.TaskString or MethodReturnKind.TaskNullableString or MethodReturnKind.ValueTaskString or MethodReturnKind.ValueTaskNullableString or MethodReturnKind.IEnumerableByte or MethodReturnKind.IAsyncEnumerableByte => true,
         _ => false
     };
 
+    /// <summary>
+    /// Searches for a logger in the containing type (fields or constructor parameters).
+    /// </summary>
+    /// <param name="type">The type to search in.</param>
+    /// <param name="isStatic">Whether the target method is static.</param>
+    /// <param name="types">The known types for the compilation.</param>
+    /// <param name="isFromParameter">Output: Whether the logger was found in a constructor parameter.</param>
+    /// <returns>The expression to access the logger, or <c>null</c> if not found.</returns>
     private static string? FindLoggerInContainingType(ITypeSymbol? type, bool isStatic, KnownTypes types, out bool isFromParameter)
     {
         isFromParameter = false;
