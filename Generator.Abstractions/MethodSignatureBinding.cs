@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Esolang.Generator;
@@ -56,6 +57,7 @@ public record struct MethodSignatureBinding(
     /// <summary>Gets a value indicating whether the method returns an async enumerable.</summary>
     public readonly bool IsAsyncEnumerable => ReturnKind == MethodReturnKind.IAsyncEnumerableByte;
 
+    [ExcludeFromCodeCoverage]
     readonly bool PrintMembers(StringBuilder builder)
     {
         builder.Append(nameof(IsValid)).Append('=').Append(IsValid).Append(", ");
@@ -78,6 +80,7 @@ public record struct MethodSignatureBinding(
     }
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public override readonly string ToString()
     {
         var builder = new StringBuilder();

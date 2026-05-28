@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Esolang.Generator;
@@ -150,6 +151,8 @@ public readonly struct KnownTypes
         }
         return false;
     }
+
+    [ExcludeFromCodeCoverage]
     readonly bool PrintMembers(StringBuilder builder)
     {
         builder.Append(nameof(String)).Append('=');
@@ -228,6 +231,7 @@ public readonly struct KnownTypes
     }
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public override string ToString()
     {
         var builder = new StringBuilder();

@@ -13,10 +13,12 @@ public class KnownTypesTests
         var assemblies = new[]
         {
             typeof(object).Assembly,
-            typeof(Task).Assembly,
-            typeof(ValueTask).Assembly,
-            typeof(Enumerable).Assembly
-        };
+            typeof(System.Threading.Tasks.Task).Assembly,
+            typeof(System.Linq.Enumerable).Assembly
+        }.ToList();
+#if NET472_OR_GREATER
+        assemblies.Add(typeof(System.Threading.Tasks.ValueTask).Assembly);
+#endif
         var references = assemblies
             .Select(a => MetadataReference.CreateFromFile(a.Location))
             .ToList();
