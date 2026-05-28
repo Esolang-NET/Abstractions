@@ -7,65 +7,44 @@ namespace Esolang.Generator;
 /// <summary>
 /// Holds resolved type symbols for a compilation.
 /// </summary>
-public readonly struct KnownTypes
+/// <remarks>
+/// Initializes a new instance of the <see cref="KnownTypes"/> struct.
+/// </remarks>
+/// <param name="compilation">The compilation to resolve types from.</param>
+public readonly struct KnownTypes(Compilation compilation)
 {
     /// <summary>The <c>string</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? String;
+    public readonly INamedTypeSymbol? String = compilation.GetSpecialType(SpecialType.System_String);
     /// <summary>The <c>byte</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? Byte;
+    public readonly INamedTypeSymbol? Byte = compilation.GetSpecialType(SpecialType.System_Byte);
     /// <summary>The <c>int</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? Int32;
+    public readonly INamedTypeSymbol? Int32 = compilation.GetSpecialType(SpecialType.System_Int32);
     /// <summary>The <c>System.Threading.Tasks.Task</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? Task;
+    public readonly INamedTypeSymbol? Task = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task");
     /// <summary>The <c>System.Threading.Tasks.Task{TResult}</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? TaskT;
+    public readonly INamedTypeSymbol? TaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task`1");
     /// <summary>The <c>System.Threading.Tasks.ValueTask</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? ValueTask;
+    public readonly INamedTypeSymbol? ValueTask = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.ValueTask");
     /// <summary>The <c>System.Threading.Tasks.ValueTask{TResult}</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? ValueTaskT;
+    public readonly INamedTypeSymbol? ValueTaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.ValueTask`1");
     /// <summary>The <c>System.Collections.Generic.IEnumerable{T}</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? IEnumerableT;
+    public readonly INamedTypeSymbol? IEnumerableT = compilation.GetBestTypeByMetadataName("System.Collections.Generic.IEnumerable`1");
     /// <summary>The <c>System.Collections.Generic.IAsyncEnumerable{T}</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? IAsyncEnumerableT;
+    public readonly INamedTypeSymbol? IAsyncEnumerableT = compilation.GetBestTypeByMetadataName("System.Collections.Generic.IAsyncEnumerable`1");
     /// <summary>The <c>System.IO.Pipelines.PipeReader</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? PipeReader;
+    public readonly INamedTypeSymbol? PipeReader = compilation.GetBestTypeByMetadataName("System.IO.Pipelines.PipeReader");
     /// <summary>The <c>System.IO.Pipelines.PipeWriter</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? PipeWriter;
+    public readonly INamedTypeSymbol? PipeWriter = compilation.GetBestTypeByMetadataName("System.IO.Pipelines.PipeWriter");
     /// <summary>The <c>System.IO.TextReader</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? TextReader;
+    public readonly INamedTypeSymbol? TextReader = compilation.GetBestTypeByMetadataName("System.IO.TextReader");
     /// <summary>The <c>System.IO.TextWriter</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? TextWriter;
+    public readonly INamedTypeSymbol? TextWriter = compilation.GetBestTypeByMetadataName("System.IO.TextWriter");
     /// <summary>The <c>System.Threading.CancellationToken</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? CancellationToken;
+    public readonly INamedTypeSymbol? CancellationToken = compilation.GetBestTypeByMetadataName("System.Threading.CancellationToken");
     /// <summary>The <c>Microsoft.Extensions.Logging.ILogger</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? ILogger;
+    public readonly INamedTypeSymbol? ILogger = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
     /// <summary>The <c>Microsoft.Extensions.Logging.ILogger{T}</c> type symbol.</summary>
-    public readonly INamedTypeSymbol? ILoggerT;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="KnownTypes"/> struct.
-    /// </summary>
-    /// <param name="compilation">The compilation to resolve types from.</param>
-    public KnownTypes(Compilation compilation)
-    {
-        String = compilation.GetSpecialType(SpecialType.System_String);
-        Byte = compilation.GetSpecialType(SpecialType.System_Byte);
-        Int32 = compilation.GetSpecialType(SpecialType.System_Int32);
-
-        Task = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task");
-        TaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.Task`1");
-        ValueTask = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.ValueTask");
-        ValueTaskT = compilation.GetBestTypeByMetadataName("System.Threading.Tasks.ValueTask`1");
-        IEnumerableT = compilation.GetBestTypeByMetadataName("System.Collections.Generic.IEnumerable`1");
-        IAsyncEnumerableT = compilation.GetBestTypeByMetadataName("System.Collections.Generic.IAsyncEnumerable`1");
-        PipeReader = compilation.GetBestTypeByMetadataName("System.IO.Pipelines.PipeReader");
-        PipeWriter = compilation.GetBestTypeByMetadataName("System.IO.Pipelines.PipeWriter");
-        TextReader = compilation.GetBestTypeByMetadataName("System.IO.TextReader");
-        TextWriter = compilation.GetBestTypeByMetadataName("System.IO.TextWriter");
-        CancellationToken = compilation.GetBestTypeByMetadataName("System.Threading.CancellationToken");
-        ILogger = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
-        ILoggerT = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
-    }
+    public readonly INamedTypeSymbol? ILoggerT = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
 
     private static bool EqualsDefinition(ITypeSymbol? type, ISymbol? symbol) =>
         type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type.OriginalDefinition, symbol);
