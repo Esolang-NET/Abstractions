@@ -7,21 +7,21 @@ namespace Esolang.Generator;
 /// </summary>
 public readonly struct KnownTypes
 {
-    /// <summary>The <see cref="string"/> type symbol.</summary>
+    /// <summary>The <c>string</c> type symbol.</summary>
     public readonly INamedTypeSymbol? String;
-    /// <summary>The <see cref="byte"/> type symbol.</summary>
+    /// <summary>The <c>byte</c> type symbol.</summary>
     public readonly INamedTypeSymbol? Byte;
-    /// <summary>The <see cref="int"/> type symbol.</summary>
+    /// <summary>The <c>int</c> type symbol.</summary>
     public readonly INamedTypeSymbol? Int32;
-    /// <summary>The <see cref="System.Threading.Tasks.Task"/> type symbol.</summary>
+    /// <summary>The <c>System.Threading.Tasks.Task</c> type symbol.</summary>
     public readonly INamedTypeSymbol? Task;
-    /// <summary>The <see cref="System.Threading.Tasks.Task{TResult}"/> type symbol.</summary>
+    /// <summary>The <c>System.Threading.Tasks.Task{TResult}</c> type symbol.</summary>
     public readonly INamedTypeSymbol? TaskT;
-    /// <summary>The <see cref="System.Threading.Tasks.ValueTask"/> type symbol.</summary>
+    /// <summary>The <c>System.Threading.Tasks.ValueTask</c> type symbol.</summary>
     public readonly INamedTypeSymbol? ValueTask;
-    /// <summary>The <see cref="System.Threading.Tasks.ValueTask{TResult}"/> type symbol.</summary>
+    /// <summary>The <c>System.Threading.Tasks.ValueTask{TResult}</c> type symbol.</summary>
     public readonly INamedTypeSymbol? ValueTaskT;
-    /// <summary>The <see cref="System.Collections.Generic.IEnumerable{T}"/> type symbol.</summary>
+    /// <summary>The <c>System.Collections.Generic.IEnumerable{T}</c> type symbol.</summary>
     public readonly INamedTypeSymbol? IEnumerableT;
     /// <summary>The <c>System.Collections.Generic.IAsyncEnumerable{T}</c> type symbol.</summary>
     public readonly INamedTypeSymbol? IAsyncEnumerableT;
@@ -29,9 +29,9 @@ public readonly struct KnownTypes
     public readonly INamedTypeSymbol? PipeReader;
     /// <summary>The <c>System.IO.Pipelines.PipeWriter</c> type symbol.</summary>
     public readonly INamedTypeSymbol? PipeWriter;
-    /// <summary>The <see cref="System.IO.TextReader"/> type symbol.</summary>
+    /// <summary>The <c>System.IO.TextReader</c> type symbol.</summary>
     public readonly INamedTypeSymbol? TextReader;
-    /// <summary>The <see cref="System.IO.TextWriter"/> type symbol.</summary>
+    /// <summary>The <c>System.IO.TextWriter</c> type symbol.</summary>
     public readonly INamedTypeSymbol? TextWriter;
     /// <summary>The <c>System.Threading.CancellationToken</c> type symbol.</summary>
     public readonly INamedTypeSymbol? CancellationToken;
@@ -71,34 +71,43 @@ public readonly struct KnownTypes
     private static bool EqualsType(ITypeSymbol? type, ISymbol? symbol) =>
         type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type, symbol);
 
-    /// <summary>Gets a value indicating whether the type is <see cref="string"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>string</c>.</summary>
     /// <param name="type">The type to check.</param>
     /// <param name="isNullable">Optional: Whether to check for nullability.</param>
-    public bool IsString(ITypeSymbol? type, bool? isNullable = null) =>
-        type != null && SymbolEqualityComparer.Default.Equals(type, String) && (isNullable == null || type.NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated));
+    public bool IsString(ITypeSymbol? type, bool? isNullable = null)
+    {
+        if (type is not INamedTypeSymbol named || !SymbolEqualityComparer.Default.Equals(named, String)) return false;
+        if (isNullable == null) return true;
+        if (isNullable.Value) return type.NullableAnnotation == NullableAnnotation.Annotated;
+        return type.NullableAnnotation is NullableAnnotation.NotAnnotated or NullableAnnotation.None;
+    }
 
-    /// <summary>Gets a value indicating whether the type is <see cref="byte"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>byte</c>.</summary>
     public bool IsByte(ITypeSymbol? type) => EqualsType(type, Byte);
-    /// <summary>Gets a value indicating whether the type is <see cref="int"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>int</c>.</summary>
     public bool IsInt32(ITypeSymbol? type) => EqualsType(type, Int32);
 
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.Task"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.Task</c>.</summary>
     public bool IsTask(ITypeSymbol? type) => EqualsType(type, Task);
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.Task{TResult}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.Task{TResult}</c>.</summary>
     public bool IsTaskT(ITypeSymbol? type, bool? isNullable = null)
     {
         if (type is not INamedTypeSymbol named || !EqualsDefinition(named, TaskT)) return false;
-        return isNullable == null || named.TypeArguments[0].NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated);
+        if (isNullable == null) return true;
+        var annotation = named.TypeArguments[0].NullableAnnotation;
+        return isNullable.Value ? annotation == NullableAnnotation.Annotated : annotation is NullableAnnotation.NotAnnotated or NullableAnnotation.None;
     }
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.ValueTask"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.ValueTask</c>.</summary>
     public bool IsValueTask(ITypeSymbol? type) => EqualsType(type, ValueTask);
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.ValueTask{TResult}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.ValueTask{TResult}</c>.</summary>
     public bool IsValueTaskT(ITypeSymbol? type, bool? isNullable = null)
     {
         if (type is not INamedTypeSymbol named || !EqualsDefinition(named, ValueTaskT)) return false;
-        return isNullable == null || named.TypeArguments[0].NullableAnnotation == (isNullable.Value ? NullableAnnotation.Annotated : NullableAnnotation.NotAnnotated);
+        if (isNullable == null) return true;
+        var annotation = named.TypeArguments[0].NullableAnnotation;
+        return isNullable.Value ? annotation == NullableAnnotation.Annotated : annotation is NullableAnnotation.NotAnnotated or NullableAnnotation.None;
     }
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Collections.Generic.IEnumerable{T}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Collections.Generic.IEnumerable{T}</c>.</summary>
     public bool IsIEnumerableT(ITypeSymbol? type) => EqualsDefinition(type, IEnumerableT);
     /// <summary>Gets a value indicating whether the type is <c>System.Collections.Generic.IAsyncEnumerable{T}</c>.</summary>
     public bool IsIAsyncEnumerableT(ITypeSymbol? type) => EqualsDefinition(type, IAsyncEnumerableT);
@@ -107,24 +116,24 @@ public readonly struct KnownTypes
     public bool IsPipeReader(ITypeSymbol? type) => EqualsType(type, PipeReader);
     /// <summary>Gets a value indicating whether the type is <c>System.IO.Pipelines.PipeWriter</c>.</summary>
     public bool IsPipeWriter(ITypeSymbol? type) => EqualsType(type, PipeWriter);
-    /// <summary>Gets a value indicating whether the type is <see cref="System.IO.TextReader"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.IO.TextReader</c>.</summary>
     public bool IsTextReader(ITypeSymbol? type) => EqualsType(type, TextReader);
-    /// <summary>Gets a value indicating whether the type is <see cref="System.IO.TextWriter"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.IO.TextWriter</c>.</summary>
     public bool IsTextWriter(ITypeSymbol? type) => EqualsType(type, TextWriter);
     /// <summary>Gets a value indicating whether the type is <c>System.Threading.CancellationToken</c>.</summary>
     public bool IsCancellationToken(ITypeSymbol? type) => EqualsType(type, CancellationToken);
 
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.Task{String}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.Task{String}</c>.</summary>
     public bool IsTaskString(ITypeSymbol? type, bool? isNullable = null) => IsTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.ValueTask{String}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.ValueTask{String}</c>.</summary>
     public bool IsValueTaskString(ITypeSymbol? type, bool? isNullable = null) => IsValueTaskT(type, isNullable) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_String;
 
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.Task{Int32}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.Task{Int32}</c>.</summary>
     public bool IsTaskInt32(ITypeSymbol? type) => IsTaskT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Int32;
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Threading.Tasks.ValueTask{Int32}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Threading.Tasks.ValueTask{Int32}</c>.</summary>
     public bool IsValueTaskInt32(ITypeSymbol? type) => IsValueTaskT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Int32;
 
-    /// <summary>Gets a value indicating whether the type is <see cref="System.Collections.Generic.IEnumerable{Byte}"/>.</summary>
+    /// <summary>Gets a value indicating whether the type is <c>System.Collections.Generic.IEnumerable{Byte}</c>.</summary>
     public bool IsIEnumerableByte(ITypeSymbol? type) => IsIEnumerableT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Byte;
     /// <summary>Gets a value indicating whether the type is <c>System.Collections.Generic.IAsyncEnumerable{Byte}</c>.</summary>
     public bool IsIAsyncEnumerableByte(ITypeSymbol? type) => IsIAsyncEnumerableT(type) && ((INamedTypeSymbol)type!).TypeArguments[0].SpecialType == SpecialType.System_Byte;
