@@ -1,6 +1,6 @@
 using Esolang.Generator;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.CodeAnalysis;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Esolang.Generator.Tests;
 
@@ -13,7 +13,7 @@ public class MethodSignatureBindingTests
         // IsAsync: Task 系
         var bindingTask = new MethodSignatureBinding(true, MethodReturnKind.Task, MethodInputKind.None, MethodOutputKind.None, "", "", null, null, false, []);
         Assert.IsTrue(bindingTask.IsAsync);
-        
+
         // IsAsync: ValueTask 系
         var bindingValueTask = new MethodSignatureBinding(true, MethodReturnKind.ValueTask, MethodInputKind.None, MethodOutputKind.None, "", "", null, null, false, []);
         Assert.IsTrue(bindingValueTask.IsAsync);

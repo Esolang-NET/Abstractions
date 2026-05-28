@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using Esolang.Generator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Esolang.Generator.Tests;
 

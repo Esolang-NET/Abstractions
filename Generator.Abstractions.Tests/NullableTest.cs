@@ -17,7 +17,7 @@ public class NullableTest(TestContext TestContext)
             new[] { CSharpSyntaxTree.ParseText("class C {}", cancellationToken: CancellationToken) },
             null,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-        
+
         // デフォルトは Disable であるはず
         Assert.AreEqual(NullableContextOptions.Disable, compilation.Options.NullableContextOptions);
     }

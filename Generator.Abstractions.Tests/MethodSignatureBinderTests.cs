@@ -1,15 +1,15 @@
+using Basic.Reference.Assemblies;
+using Esolang.Generator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Esolang.Generator;
-using Basic.Reference.Assemblies;
-using System.Text;
 
 namespace Esolang.Generator.Tests;
 
@@ -82,9 +82,9 @@ public class MethodSignatureBinderTests(TestContext TestContext)
     {
         var (method, compilation) = GetMethodAndCompilation("using System.Threading.Tasks; class C { Task M() => Task.CompletedTask; }", "M");
         var knownTypes = new KnownTypes(compilation);
-        
+
         Assert.IsNotNull(knownTypes.Task, "KnownTypes.Task is null");
-        
+
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsTrue(binding.IsValid, $"binding: {binding}");
         Assert.AreEqual(MethodReturnKind.Task, binding.ReturnKind, $"binding: {binding}");
@@ -251,7 +251,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         var knownTypes = new KnownTypes(compilation);
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        
+
         Assert.IsTrue(binding.IsValid, $"binding: {binding}");
         Assert.AreEqual(MethodReturnKind.TaskInt32, binding.ReturnKind);
         Assert.AreEqual(MethodInputKind.String, binding.InputKind);

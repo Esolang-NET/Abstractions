@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace Esolang.Generator.Tests;
 
@@ -92,7 +92,7 @@ public class KnownTypesTests
         var knownTypes = new KnownTypes(compilation);
         var classC = compilation.GetTypeByMetadataName("C");
         var field = classC?.GetMembers("s").OfType<IFieldSymbol>().FirstOrDefault();
-        
+
         Assert.IsNotNull(field);
         Assert.IsTrue(knownTypes.IsString(field.Type, isNullable: true));
         Assert.IsFalse(knownTypes.IsString(field.Type, isNullable: false));
@@ -132,10 +132,10 @@ public class KnownTypesTests
 
         Assert.IsNotNull(method1);
         Assert.IsNotNull(method2);
-        
+
         Assert.IsTrue(knownTypes.IsTaskT(method1.ReturnType, isNullable: false));
         Assert.IsFalse(knownTypes.IsTaskT(method1.ReturnType, isNullable: true));
-        
+
         Assert.IsTrue(knownTypes.IsTaskT(method2.ReturnType, isNullable: true));
         Assert.IsFalse(knownTypes.IsTaskT(method2.ReturnType, isNullable: false));
     }
@@ -158,10 +158,10 @@ public class KnownTypesTests
 
         Assert.IsNotNull(method1);
         Assert.IsNotNull(method2);
-        
+
         Assert.IsTrue(knownTypes.IsValueTaskT(method1.ReturnType, isNullable: false));
         Assert.IsFalse(knownTypes.IsValueTaskT(method1.ReturnType, isNullable: true));
-        
+
         Assert.IsTrue(knownTypes.IsValueTaskT(method2.ReturnType, isNullable: true));
         Assert.IsFalse(knownTypes.IsValueTaskT(method2.ReturnType, isNullable: false));
     }
