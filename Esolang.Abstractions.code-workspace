@@ -5,6 +5,14 @@
 			"name": "root"
 		},
 		{
+			"path": "Generator.Abstractions",
+			"name": "Esolang.Generator.Abstractions"
+		},
+		{
+			"path": "Generator.Abstractions.Tests",
+			"name": "Esolang.Generator.Abstractions.Tests"
+		},
+		{
 			"path": "Processor.Abstractions",
 			"name": "Esolang.Processor.Abstractions"
 		},
@@ -20,6 +28,8 @@
 			"**/.hg": true,
 			"**/.DS_Store": true,
 			"**/Thumbs.db": true,
+			"Generator.Abstractions": true,
+			"Generator.Abstractions.Tests": true,
 			"Processor.Abstractions": true,
 			"Processor.Abstractions.Tests": true
 		}

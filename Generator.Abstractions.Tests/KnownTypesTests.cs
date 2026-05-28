@@ -13,9 +13,9 @@ public class KnownTypesTests
         var assemblies = new[]
         {
             typeof(object).Assembly,
-            typeof(System.Threading.Tasks.Task).Assembly,
-            typeof(System.Threading.Tasks.ValueTask).Assembly,
-            typeof(System.Linq.Enumerable).Assembly
+            typeof(Task).Assembly,
+            typeof(ValueTask).Assembly,
+            typeof(Enumerable).Assembly
         };
         var references = assemblies
             .Select(a => MetadataReference.CreateFromFile(a.Location))
