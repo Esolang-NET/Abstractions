@@ -350,4 +350,38 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         Assert.IsFalse(binding.IsValid);
         Assert.AreEqual("ES0004", binding.ErrorId); // ReturnOutputConflictErrorId
     }
+
+    [TestMethod]
+    public void Bind_DuplicateLoggerParameter_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("""
+            using Microsoft.Extensions.Logging;
+            class C {
+                void M(ILogger l1, ILogger l2) {}
+            }
+            """, "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+    }
+
+    [TestMethod]
+    public void Bind_LoggerInField_CanBeReferencedByName_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("""
+            using Microsoft.Extensions.Logging;
+            class C {
+                public ILogger loggerField;
+                void M() {}
+            }
+            """, "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.IsFalse(binding.IsLoggerFromParameter);
+        Assert.AreEqual("loggerField", binding.LoggerExpression);
+    }
 }
