@@ -38,8 +38,10 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         var extraTypes = new[] {
             typeof(System.IO.Pipelines.PipeReader),
             typeof(Microsoft.Extensions.Logging.ILogger),
+#if NET472_OR_GREATER
             typeof(ValueTask),
             typeof(IAsyncEnumerable<>)
+#endif
         };
 
         foreach (var type in extraTypes)
@@ -53,31 +55,15 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         baseCompilation = CSharpCompilation.Create("generatortest",
             references: referenceList,
-            options: new CSharpCompilationOptions(
-                OutputKind.DynamicallyLinkedLibrary,
-                nullableContextOptions: NullableContextOptions.Enable));
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
     }
 
     private (IMethodSymbol, Compilation) GetMethodAndCompilation(string code, string methodName)
     {
-        // コード全体に対して nullable enable を適用する
         var tree = CSharpSyntaxTree.ParseText("#nullable enable\n" + code, cancellationToken: TestContext.CancellationToken);
         var compilation = baseCompilation.AddSyntaxTrees(tree);
         var classC = compilation.GetTypeByMetadataName("C");
         return (classC!.GetMembers(methodName).OfType<IMethodSymbol>().First(), compilation);
-    }
-    static string ToString(ITypeSymbol? symbol)
-    {
-        var builder = new StringBuilder();
-        if (symbol is null) return string.Empty;
-        builder.Append('(');
-        builder.Append(symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
-        builder.Append(", ");
-        builder.Append(nameof(symbol.NullableAnnotation));
-        builder.Append(':');
-        builder.Append(symbol.NullableAnnotation);
-        builder.Append(')');
-        return builder.ToString();
     }
 
     [TestMethod]
@@ -87,18 +73,8 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         var knownTypes = new KnownTypes(compilation);
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        try
-        {
-            Assert.IsTrue(binding.IsValid);
-            Assert.AreEqual(MethodReturnKind.Void, binding.ReturnKind);
-        }
-        catch (AssertFailedException)
-        {
-            WriteLine($"binding: {binding}");
-            WriteLine($"knownTypes: {knownTypes}");
-            WriteLine($"returnType: {ToString(method.ReturnType)}");
-            throw;
-        }
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodReturnKind.Void, binding.ReturnKind, $"binding: {binding}");
     }
 
     [TestMethod]
@@ -106,20 +82,22 @@ public class MethodSignatureBinderTests(TestContext TestContext)
     {
         var (method, compilation) = GetMethodAndCompilation("using System.Threading.Tasks; class C { Task M() => Task.CompletedTask; }", "M");
         var knownTypes = new KnownTypes(compilation);
+        
+        Assert.IsNotNull(knownTypes.Task, "KnownTypes.Task is null");
+        
+        var equality = SymbolEqualityComparer.Default.Equals(method.ReturnType, knownTypes.Task);
+        if (!equality)
+        {
+            WriteLine($"SymbolEqualityComparer failed: ReturnType={method.ReturnType}, KnownTypes.Task={knownTypes.Task}");
+            WriteLine($"ReturnType Assembly: {method.ReturnType.ContainingAssembly?.Name}");
+            WriteLine($"KnownTypes.Task Assembly: {knownTypes.Task?.ContainingAssembly?.Name}");
+        }
+        
+        Assert.IsTrue(equality, $"SymbolEqualityComparer failed: ReturnType={method.ReturnType}, KnownTypes.Task={knownTypes.Task}");
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        try
-        {
-            Assert.IsTrue(binding.IsValid);
-            Assert.AreEqual(MethodReturnKind.Task, binding.ReturnKind);
-        }
-        catch (AssertFailedException)
-        {
-            WriteLine($"binding: {binding}");
-            WriteLine($"knownTypes: {knownTypes}");
-            WriteLine($"returnType: {ToString(method.ReturnType)}");
-            throw;
-        }
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodReturnKind.Task, binding.ReturnKind, $"binding: {binding}");
     }
 
     [TestMethod]
@@ -129,18 +107,8 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         var knownTypes = new KnownTypes(compilation);
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        try
-        {
-            Assert.IsTrue(binding.IsValid);
-            Assert.AreEqual(MethodReturnKind.ValueTask, binding.ReturnKind);
-        }
-        catch (AssertFailedException)
-        {
-            WriteLine($"binding: {binding}");
-            WriteLine($"knownTypes: {knownTypes}");
-            WriteLine($"returnType: {ToString(method.ReturnType)}");
-            throw;
-        }
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodReturnKind.ValueTask, binding.ReturnKind, $"binding: {binding}");
     }
 
     [TestMethod]
@@ -150,18 +118,8 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         var knownTypes = new KnownTypes(compilation);
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        try
-        {
-            Assert.IsTrue(binding.IsValid, $"binding: {binding}");
-            Assert.AreEqual(MethodReturnKind.TaskInt32, binding.ReturnKind, $"binding: {binding}");
-        }
-        catch (AssertFailedException)
-        {
-            WriteLine($"binding: {binding}");
-            WriteLine($"knownTypes: {knownTypes}");
-            WriteLine($"returnType: {ToString(method.ReturnType)}");
-            throw;
-        }
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodReturnKind.TaskInt32, binding.ReturnKind, $"binding: {binding}");
     }
 
     [TestMethod]
@@ -171,17 +129,89 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         var knownTypes = new KnownTypes(compilation);
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        try
-        {
-            Assert.IsTrue(binding.IsValid, $"binding: {binding}");
-            Assert.AreEqual(MethodReturnKind.ValueTaskInt32, binding.ReturnKind, $"binding: {binding}");
-        }
-        catch (AssertFailedException)
-        {
-            WriteLine($"binding: {binding}");
-            WriteLine($"knownTypes: {knownTypes}");
-            WriteLine($"returnType: {ToString(method.ReturnType)}");
-            throw;
-        }
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodReturnKind.ValueTaskInt32, binding.ReturnKind, $"binding: {binding}");
+    }
+
+    [TestMethod]
+    public void Bind_StringInput_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("class C { void M(string s) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodInputKind.String, binding.InputKind);
+        Assert.AreEqual("s", binding.InputExpression);
+    }
+
+    [TestMethod]
+    public void Bind_TextReaderInput_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO; class C { void M(TextReader r) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodInputKind.TextReader, binding.InputKind);
+        Assert.AreEqual("r", binding.InputExpression);
+    }
+
+    [TestMethod]
+    public void Bind_TextWriterOutput_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO; class C { void M(TextWriter w) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodOutputKind.TextWriter, binding.OutputKind);
+        Assert.AreEqual("w", binding.OutputExpression);
+    }
+
+    [TestMethod]
+    public void Bind_DuplicateParameters_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("class C { void M(string s1, string s2) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+    }
+
+    [TestMethod]
+    public void Bind_CancellationToken_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.Threading; class C { void M(CancellationToken ct) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.AreEqual("ct", binding.CancellationTokenName);
+    }
+
+    [TestMethod]
+    public void Bind_LoggerParameter_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using Microsoft.Extensions.Logging; class C { void M(ILogger logger) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.IsTrue(binding.IsLoggerFromParameter);
+        Assert.AreEqual("logger", binding.LoggerExpression);
+    }
+
+    [TestMethod]
+    public void Bind_UnhandledParameters_AddedToUnhandledList()
+    {
+        var (method, compilation) = GetMethodAndCompilation("class C { void M(int i, string s) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.AreEqual(1, binding.UnhandledParameters.Count);
+        Assert.AreEqual("i", binding.UnhandledParameters[0].Name);
     }
 }
