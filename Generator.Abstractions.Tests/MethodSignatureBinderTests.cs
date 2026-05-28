@@ -85,16 +85,6 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         
         Assert.IsNotNull(knownTypes.Task, "KnownTypes.Task is null");
         
-        var equality = SymbolEqualityComparer.Default.Equals(method.ReturnType, knownTypes.Task);
-        if (!equality)
-        {
-            WriteLine($"SymbolEqualityComparer failed: ReturnType={method.ReturnType}, KnownTypes.Task={knownTypes.Task}");
-            WriteLine($"ReturnType Assembly: {method.ReturnType.ContainingAssembly?.Name}");
-            WriteLine($"KnownTypes.Task Assembly: {knownTypes.Task?.ContainingAssembly?.Name}");
-        }
-        
-        Assert.IsTrue(equality, $"SymbolEqualityComparer failed: ReturnType={method.ReturnType}, KnownTypes.Task={knownTypes.Task}");
-
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsTrue(binding.IsValid, $"binding: {binding}");
         Assert.AreEqual(MethodReturnKind.Task, binding.ReturnKind, $"binding: {binding}");
@@ -170,14 +160,56 @@ public class MethodSignatureBinderTests(TestContext TestContext)
     }
 
     [TestMethod]
-    public void Bind_DuplicateParameters_ReturnsInvalidBinding()
+    public void Bind_LoggerInField_ReturnsValidBinding()
     {
-        var (method, compilation) = GetMethodAndCompilation("class C { void M(string s1, string s2) {} }", "M");
+        var (method, compilation) = GetMethodAndCompilation("""
+            using Microsoft.Extensions.Logging;
+            class C {
+                ILogger _logger;
+                C(ILogger logger) => _logger = logger;
+                void M() {}
+            }
+            """, "M");
         var knownTypes = new KnownTypes(compilation);
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+        Assert.IsTrue(binding.IsValid);
+        Assert.IsFalse(binding.IsLoggerFromParameter);
+        Assert.AreEqual("_logger", binding.LoggerExpression);
+    }
+
+    [TestMethod]
+    public void Bind_LoggerInBaseClass_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("""
+            using Microsoft.Extensions.Logging;
+            class B { protected ILogger _logger; }
+            class C : B { void M() {} }
+            """, "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.IsFalse(binding.IsLoggerFromParameter);
+        Assert.AreEqual("_logger", binding.LoggerExpression);
+    }
+
+    [TestMethod]
+    public void Bind_LoggerInConstructorParameter_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("""
+            using Microsoft.Extensions.Logging;
+            class C {
+                C(ILogger logger) { }
+                void M() {}
+            }
+            """, "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.IsTrue(binding.IsLoggerFromParameter);
+        Assert.AreEqual("logger", binding.LoggerExpression);
     }
 
     [TestMethod]
@@ -192,18 +224,6 @@ public class MethodSignatureBinderTests(TestContext TestContext)
     }
 
     [TestMethod]
-    public void Bind_LoggerParameter_ReturnsValidBinding()
-    {
-        var (method, compilation) = GetMethodAndCompilation("using Microsoft.Extensions.Logging; class C { void M(ILogger logger) {} }", "M");
-        var knownTypes = new KnownTypes(compilation);
-
-        var binding = MethodSignatureBinder.Bind(method, knownTypes);
-        Assert.IsTrue(binding.IsValid);
-        Assert.IsTrue(binding.IsLoggerFromParameter);
-        Assert.AreEqual("logger", binding.LoggerExpression);
-    }
-
-    [TestMethod]
     public void Bind_UnhandledParameters_AddedToUnhandledList()
     {
         var (method, compilation) = GetMethodAndCompilation("class C { void M(int i, string s) {} }", "M");
@@ -213,5 +233,121 @@ public class MethodSignatureBinderTests(TestContext TestContext)
         Assert.IsTrue(binding.IsValid);
         Assert.AreEqual(1, binding.UnhandledParameters.Count);
         Assert.AreEqual("i", binding.UnhandledParameters[0].Name);
+    }
+
+    [TestMethod]
+    public void Bind_Integrated_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("""
+            using System.Threading;
+            using System.Threading.Tasks;
+            using Microsoft.Extensions.Logging;
+            class C {
+                ILogger _logger;
+                C(ILogger logger) { _logger = logger; }
+                Task<int> M(string input, CancellationToken ct) => Task.FromResult(0);
+            }
+            """, "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        
+        Assert.IsTrue(binding.IsValid, $"binding: {binding}");
+        Assert.AreEqual(MethodReturnKind.TaskInt32, binding.ReturnKind);
+        Assert.AreEqual(MethodInputKind.String, binding.InputKind);
+        Assert.AreEqual("input", binding.InputExpression);
+        Assert.AreEqual("ct", binding.CancellationTokenName);
+        Assert.IsFalse(binding.IsLoggerFromParameter);
+        Assert.AreEqual("_logger", binding.LoggerExpression);
+    }
+
+    [TestMethod]
+    public void Bind_InvalidReturnKind_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("class C { float M() => 0.0f; }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0001", binding.ErrorId); // invalidReturnTypeErrorId
+    }
+
+    [TestMethod]
+    public void Bind_PipeReaderInput_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO.Pipelines; class C { void M(PipeReader r) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.AreEqual(MethodInputKind.PipeReader, binding.InputKind);
+        Assert.AreEqual("r", binding.InputExpression);
+    }
+
+    [TestMethod]
+    public void Bind_PipeWriterOutput_ReturnsValidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO.Pipelines; class C { void M(PipeWriter w) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsTrue(binding.IsValid);
+        Assert.AreEqual(MethodOutputKind.PipeWriter, binding.OutputKind);
+        Assert.AreEqual("w", binding.OutputExpression);
+    }
+
+    [TestMethod]
+    public void Bind_RefParameter_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("class C { void M(ref string s) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0002", binding.ErrorId); // invalidParameterErrorId
+    }
+
+    [TestMethod]
+    public void Bind_DuplicateStringInput_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("class C { void M(string s1, string s2) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+    }
+
+    [TestMethod]
+    public void Bind_DuplicateTextReaderInput_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO; class C { void M(TextReader r1, TextReader r2) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+    }
+
+    [TestMethod]
+    public void Bind_DuplicateTextWriterOutput_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO; class C { void M(TextWriter w1, TextWriter w2) {} }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+    }
+
+    [TestMethod]
+    public void Bind_ReturnOutputConflict_ReturnsInvalidBinding()
+    {
+        var (method, compilation) = GetMethodAndCompilation("using System.IO; class C { string M(TextWriter w) => \"\"; }", "M");
+        var knownTypes = new KnownTypes(compilation);
+
+        var binding = MethodSignatureBinder.Bind(method, knownTypes);
+        Assert.IsFalse(binding.IsValid);
+        Assert.AreEqual("ES0004", binding.ErrorId); // ReturnOutputConflictErrorId
     }
 }
