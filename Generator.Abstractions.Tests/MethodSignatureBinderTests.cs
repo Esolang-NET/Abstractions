@@ -269,7 +269,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0001", binding.ErrorId); // invalidReturnTypeErrorId
+        Assert.AreEqual(BindingErrorKind.UnsupportedReturnType, binding.Error!.Kind); // invalidReturnTypeErrorId
     }
 
     [TestMethod]
@@ -304,7 +304,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0002", binding.ErrorId); // invalidParameterErrorId
+        Assert.AreEqual(BindingErrorKind.InvalidParameterModifier, binding.Error!.Kind); // invalidParameterErrorId
     }
 
     [TestMethod]
@@ -315,7 +315,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+        Assert.AreEqual(BindingErrorKind.DuplicateInput, binding.Error!.Kind); // DuplicateParameterErrorId
     }
 
     [TestMethod]
@@ -326,7 +326,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+        Assert.AreEqual(BindingErrorKind.DuplicateInput, binding.Error!.Kind); // DuplicateParameterErrorId
     }
 
     [TestMethod]
@@ -337,7 +337,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+        Assert.AreEqual(BindingErrorKind.DuplicateOutput, binding.Error!.Kind); // DuplicateParameterErrorId
     }
 
     [TestMethod]
@@ -348,7 +348,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0004", binding.ErrorId); // ReturnOutputConflictErrorId
+        Assert.AreEqual(BindingErrorKind.ReturnOutputConflict, binding.Error!.Kind); // ReturnOutputConflictErrorId
     }
 
     [TestMethod]
@@ -364,7 +364,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsFalse(binding.IsValid);
-        Assert.AreEqual("ES0003", binding.ErrorId); // DuplicateParameterErrorId
+        Assert.AreEqual(BindingErrorKind.DuplicateLogger, binding.Error!.Kind); // DuplicateParameterErrorId
     }
 
     [TestMethod]
