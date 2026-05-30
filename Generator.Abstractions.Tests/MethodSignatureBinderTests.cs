@@ -5,15 +5,16 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace Esolang.Generator.Tests;
 
 [TestClass]
-public class MethodSignatureBinderTests(TestContext TestContext)
+public class MethodSignatureBinderTests
 {
-    Compilation baseCompilation = default!;
+    readonly TestContext TestContext;
+    readonly Compilation baseCompilation = default!;
 
-    void WriteLine(string message) => TestContext.WriteLine(message);
+    CancellationToken CancellationToken => TestContext.CancellationToken;
 
-    [TestInitialize]
-    public void InitializeCompilation()
+    public MethodSignatureBinderTests(TestContext TestContext)
     {
+        this.TestContext = TestContext;
         IEnumerable<PortableExecutableReference> references =
 #if NET10_0_OR_GREATER
             Net100.References.All;
@@ -51,10 +52,13 @@ public class MethodSignatureBinderTests(TestContext TestContext)
 
     (IMethodSymbol, Compilation) GetMethodAndCompilation(string code, string methodName)
     {
-        var tree = CSharpSyntaxTree.ParseText("#nullable enable\n" + code, cancellationToken: TestContext.CancellationToken);
+        var tree = CSharpSyntaxTree.ParseText("#nullable enable\n" + code, cancellationToken: CancellationToken);
         var compilation = baseCompilation.AddSyntaxTrees(tree);
         var classC = compilation.GetTypeByMetadataName("C");
-        return (classC!.GetMembers(methodName).OfType<IMethodSymbol>().First(), compilation);
+        Assert.IsNotNull(classC, "Failed to get symbol for class C");
+        var methodSymbol = classC.GetMembers(methodName).OfType<IMethodSymbol>().FirstOrDefault();
+        Assert.IsNotNull(methodSymbol, $"Failed to get symbol for method {methodName}");
+        return (methodSymbol, compilation);
     }
 
     [TestMethod]
