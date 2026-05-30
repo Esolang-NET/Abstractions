@@ -46,10 +46,10 @@ public readonly struct KnownTypes(Compilation compilation)
     /// <summary>The <c>Microsoft.Extensions.Logging.ILogger{T}</c> type symbol.</summary>
     public readonly INamedTypeSymbol? ILoggerT = compilation.GetBestTypeByMetadataName("Microsoft.Extensions.Logging.ILogger`1");
 
-    private static bool EqualsDefinition(ITypeSymbol? type, ISymbol? symbol) =>
+    static bool EqualsDefinition(ITypeSymbol? type, ISymbol? symbol) =>
         type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type.OriginalDefinition, symbol);
 
-    private static bool EqualsType(ITypeSymbol? type, ISymbol? symbol) =>
+    static bool EqualsType(ITypeSymbol? type, ISymbol? symbol) =>
         type != null && symbol != null && SymbolEqualityComparer.Default.Equals(type, symbol);
 
     /// <summary>Gets a value indicating whether the type is <c>string</c>.</summary>

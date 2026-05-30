@@ -7,7 +7,7 @@ namespace Esolang.Generator.Tests;
 [TestClass]
 public class MethodSignatureBinderTests(TestContext TestContext)
 {
-    private Compilation baseCompilation = default!;
+    Compilation baseCompilation = default!;
 
     void WriteLine(string message) => TestContext.WriteLine(message);
 
@@ -49,7 +49,7 @@ public class MethodSignatureBinderTests(TestContext TestContext)
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
     }
 
-    private (IMethodSymbol, Compilation) GetMethodAndCompilation(string code, string methodName)
+    (IMethodSymbol, Compilation) GetMethodAndCompilation(string code, string methodName)
     {
         var tree = CSharpSyntaxTree.ParseText("#nullable enable\n" + code, cancellationToken: TestContext.CancellationToken);
         var compilation = baseCompilation.AddSyntaxTrees(tree);

@@ -6,7 +6,7 @@ namespace Esolang.Generator.Tests;
 [TestClass]
 public class KnownTypesTests
 {
-    private static Compilation CreateCompilation(string code)
+    static Compilation CreateCompilation(string code)
     {
         var assemblies = new[]
         {

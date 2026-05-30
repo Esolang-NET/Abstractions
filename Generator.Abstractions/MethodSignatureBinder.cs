@@ -148,7 +148,7 @@ public static class MethodSignatureBinder
     /// <summary>
     /// Gets the default output kind based on the return kind.
     /// </summary>
-    private static MethodOutputKind BindDefaultOutputKind(MethodReturnKind returnKind) => returnKind switch
+    static MethodOutputKind BindDefaultOutputKind(MethodReturnKind returnKind) => returnKind switch
     {
         MethodReturnKind.String or MethodReturnKind.NullableString or MethodReturnKind.TaskString or MethodReturnKind.TaskNullableString or MethodReturnKind.ValueTaskString or MethodReturnKind.ValueTaskNullableString => MethodOutputKind.ReturnString,
         MethodReturnKind.IEnumerableByte => MethodOutputKind.ReturnIEnumerable,
@@ -159,7 +159,7 @@ public static class MethodSignatureBinder
     /// <summary>
     /// Gets a value indicating whether the return kind implies output is returned.
     /// </summary>
-    private static bool IsOutputReturning(MethodReturnKind returnKind) => returnKind switch
+    static bool IsOutputReturning(MethodReturnKind returnKind) => returnKind switch
     {
         MethodReturnKind.String or MethodReturnKind.NullableString or MethodReturnKind.TaskString or MethodReturnKind.TaskNullableString or MethodReturnKind.ValueTaskString or MethodReturnKind.ValueTaskNullableString or MethodReturnKind.IEnumerableByte or MethodReturnKind.IAsyncEnumerableByte => true,
         _ => false
@@ -173,7 +173,7 @@ public static class MethodSignatureBinder
     /// <param name="types">The known types for the compilation.</param>
     /// <param name="isFromParameter">Output: Whether the logger was found in a constructor parameter.</param>
     /// <returns>The expression to access the logger, or <c>null</c> if not found.</returns>
-    private static string? FindLoggerInContainingType(ITypeSymbol? type, bool isStatic, KnownTypes types, out bool isFromParameter)
+    static string? FindLoggerInContainingType(ITypeSymbol? type, bool isStatic, KnownTypes types, out bool isFromParameter)
     {
         isFromParameter = false;
         var currentType = type;

@@ -5,7 +5,7 @@ public class TextProcessorExtensionsTests(TestContext TestContext)
 {
     CancellationToken CancellationToken => TestContext.CancellationToken;
 
-    private class MockEventProcessor(List<IOEvent> events) : IEventProcessor
+    class MockEventProcessor(List<IOEvent> events) : IEventProcessor
     {
         public async IAsyncEnumerable<IOEvent> RunAsyncEnumerable([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
@@ -118,22 +118,22 @@ public class TextProcessorExtensionsTests(TestContext TestContext)
         Assert.AreEqual(88, exitCode);
     }
 
-    private class TestInputCharEvent(Action<char> write) : InputCharEvent
+    class TestInputCharEvent(Action<char> write) : InputCharEvent
     {
         public override void Write(char c) => write(c);
     }
 
-    private class TestInputIntEvent(Action<int> write) : InputIntEvent
+    class TestInputIntEvent(Action<int> write) : InputIntEvent
     {
         public override void Write(int i) => write(i);
     }
 
-    private class InputCharEventMock : InputCharEvent
+    class InputCharEventMock : InputCharEvent
     {
         public override void Write(char c) { }
     }
 
-    private class InputIntEventMock : InputIntEvent
+    class InputIntEventMock : InputIntEvent
     {
         public override void Write(int i) { }
     }
