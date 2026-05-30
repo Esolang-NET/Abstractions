@@ -33,6 +33,7 @@ public record struct MethodSignatureBinding(
     BindingError? Error = null)
 {
     /// <summary> Whether the binding is successful. </summary>
+    [MemberNotNullWhen(false, nameof(Error))]
     public readonly bool IsValid => Error is null;
     /// <summary>Gets a value indicating whether the method has an explicit input mechanism.</summary>
     public readonly bool HasExplicitInput => InputKind != MethodInputKind.None;
