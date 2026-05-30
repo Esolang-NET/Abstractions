@@ -226,7 +226,7 @@ public class MethodSignatureBinderTests
 
         var binding = MethodSignatureBinder.Bind(method, knownTypes);
         Assert.IsTrue(binding.IsValid);
-        Assert.AreEqual(1, binding.UnhandledParameters.Count);
+        Assert.HasCount(1, binding.UnhandledParameters);
         Assert.AreEqual("i", binding.UnhandledParameters[0].Name);
     }
 
