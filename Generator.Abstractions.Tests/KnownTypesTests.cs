@@ -1,7 +1,5 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace Esolang.Generator.Tests;
 
@@ -24,7 +22,7 @@ public class KnownTypesTests
             .ToList();
 
         return CSharpCompilation.Create("TestCompilation",
-            new[] { CSharpSyntaxTree.ParseText(code) },
+            [CSharpSyntaxTree.ParseText(code)],
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
     }

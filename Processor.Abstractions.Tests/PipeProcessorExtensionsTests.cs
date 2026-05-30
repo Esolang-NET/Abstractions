@@ -25,7 +25,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_HandlesEndEvent()
     {
-        var processor = new MockEventProcessor(new List<IOEvent> { new EndEvent(42) });
+        var processor = new MockEventProcessor([new EndEvent(42)]);
         var exitCode = await PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken);
         Assert.AreEqual(42, exitCode);
     }
@@ -34,7 +34,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_HandlesOutputCharEvent()
     {
-        var processor = new MockEventProcessor(new List<IOEvent> { new OutputCharEvent('A'), new EndEvent(0) });
+        var processor = new MockEventProcessor([new OutputCharEvent('A'), new EndEvent(0)]);
         var pipe = new Pipe();
 
         var readTask = Task.Run(async () =>
@@ -79,10 +79,10 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     public async Task RunToEndAsync_HandlesInputCharEvent()
     {
         var capturedChar = ' ';
-        var processor = new MockEventProcessor(new List<IOEvent> {
+        var processor = new MockEventProcessor([
             new TestInputCharEvent(c => capturedChar = c),
             new EndEvent(0)
-        });
+        ]);
 
         var pipe = new Pipe();
         await pipe.Writer.WriteAsync(Encoding.UTF8.GetBytes("X"), CancellationToken);

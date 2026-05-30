@@ -35,7 +35,7 @@ public abstract record BindingError(BindingErrorKind Kind, Location? Location);
 /// </summary>
 /// <param name="Type">The unsupported return type symbol.</param>
 /// <param name="Location">The location of the return type.</param>
-public sealed record UnsupportedReturnType(ITypeSymbol Type, Location? Location) 
+public sealed record UnsupportedReturnType(ITypeSymbol Type, Location? Location)
     : BindingError(BindingErrorKind.UnsupportedReturnType, Location);
 
 /// <summary>
@@ -43,7 +43,7 @@ public sealed record UnsupportedReturnType(ITypeSymbol Type, Location? Location)
 /// </summary>
 /// <param name="Parameter">The parameter with the invalid modifier.</param>
 /// <param name="Location">The location of the parameter.</param>
-public sealed record InvalidParameterModifier(IParameterSymbol Parameter, Location? Location) 
+public sealed record InvalidParameterModifier(IParameterSymbol Parameter, Location? Location)
     : BindingError(BindingErrorKind.InvalidParameterModifier, Location);
 
 /// <summary>
@@ -52,7 +52,7 @@ public sealed record InvalidParameterModifier(IParameterSymbol Parameter, Locati
 /// <param name="Parameter">The parameter that caused the duplication.</param>
 /// <param name="ExistingKind">The kind of input that was already assigned.</param>
 /// <param name="Location">The location of the duplicate parameter.</param>
-public sealed record DuplicateInput(IParameterSymbol Parameter, MethodInputKind ExistingKind, Location? Location) 
+public sealed record DuplicateInput(IParameterSymbol Parameter, MethodInputKind ExistingKind, Location? Location)
     : BindingError(BindingErrorKind.DuplicateInput, Location);
 
 /// <summary>
@@ -61,7 +61,7 @@ public sealed record DuplicateInput(IParameterSymbol Parameter, MethodInputKind 
 /// <param name="Parameter">The parameter that caused the duplication.</param>
 /// <param name="ExistingKind">The kind of output that was already assigned.</param>
 /// <param name="Location">The location of the duplicate parameter.</param>
-public sealed record DuplicateOutput(IParameterSymbol Parameter, MethodOutputKind ExistingKind, Location? Location) 
+public sealed record DuplicateOutput(IParameterSymbol Parameter, MethodOutputKind ExistingKind, Location? Location)
     : BindingError(BindingErrorKind.DuplicateOutput, Location);
 
 /// <summary>
@@ -69,7 +69,7 @@ public sealed record DuplicateOutput(IParameterSymbol Parameter, MethodOutputKin
 /// </summary>
 /// <param name="Parameter">The duplicate cancellation token parameter.</param>
 /// <param name="Location">The location of the duplicate parameter.</param>
-public sealed record DuplicateCancellationToken(IParameterSymbol Parameter, Location? Location) 
+public sealed record DuplicateCancellationToken(IParameterSymbol Parameter, Location? Location)
     : BindingError(BindingErrorKind.DuplicateCancellationToken, Location);
 
 /// <summary>
@@ -77,7 +77,7 @@ public sealed record DuplicateCancellationToken(IParameterSymbol Parameter, Loca
 /// </summary>
 /// <param name="Parameter">The duplicate logger parameter.</param>
 /// <param name="Location">The location of the duplicate parameter.</param>
-public sealed record DuplicateLogger(IParameterSymbol Parameter, Location? Location) 
+public sealed record DuplicateLogger(IParameterSymbol Parameter, Location? Location)
     : BindingError(BindingErrorKind.DuplicateLogger, Location);
 
 /// <summary>
@@ -85,5 +85,5 @@ public sealed record DuplicateLogger(IParameterSymbol Parameter, Location? Locat
 /// </summary>
 /// <param name="Parameter">The output parameter that conflicts with the return type.</param>
 /// <param name="Location">The location of the conflicting parameter.</param>
-public sealed record ReturnOutputConflict(IParameterSymbol Parameter, Location? Location) 
+public sealed record ReturnOutputConflict(IParameterSymbol Parameter, Location? Location)
     : BindingError(BindingErrorKind.ReturnOutputConflict, Location);

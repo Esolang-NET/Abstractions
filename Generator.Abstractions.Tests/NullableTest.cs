@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Esolang.Generator.Tests;
 
@@ -14,7 +13,7 @@ public class NullableTest(TestContext TestContext)
     public void CheckNullableContext()
     {
         var compilation = CSharpCompilation.Create("Test",
-            new[] { CSharpSyntaxTree.ParseText("class C {}", cancellationToken: CancellationToken) },
+            [CSharpSyntaxTree.ParseText("class C {}", cancellationToken: CancellationToken)],
             null,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
