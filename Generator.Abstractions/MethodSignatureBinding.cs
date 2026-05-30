@@ -19,7 +19,6 @@ namespace Esolang.Generator;
 /// <param name="UnhandledParameters">Parameters that were not handled by the common binding logic.</param>
 /// <param name="Error">The diagnostic error if the binding failed.</param>
 [DebuggerDisplay("{ToString(),nq}")]
-[ExcludeFromCodeCoverage]
 public record struct MethodSignatureBinding(
     MethodReturnKind ReturnKind,
     MethodInputKind InputKind,
