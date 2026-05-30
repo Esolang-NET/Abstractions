@@ -272,9 +272,25 @@ dotnet_diagnostic.MSTEST0032.severity = error
 dotnet_diagnostic.MSTEST0036.severity = error
 # MSTEST0037: 適切な 'Assert' メソッドを使用する
 dotnet_diagnostic.MSTEST0037.severity = error
+# MSTEST0038: 値型では 'Assert.AreSame' または 'Assert.AreNotSame' を使用しない
+dotnet_diagnostic.MSTEST0038.severity = error
+# MSTEST0040: 'async void' コンテキスト内でアサートしない
+dotnet_diagnostic.MSTEST0040.severity = error
 # MSTEST0044: DataTestMethod よりも TestMethod を優先する
 dotnet_diagnostic.MSTEST0044.severity = error
 # MSTEST0045: タイムアウトに協調キャンセルを使用する
 dotnet_diagnostic.MSTEST0045.severity = error
+# MSTEST0046: StringAssertではなくAssertを使います
+dotnet_diagnostic.MSTEST0046.severity = error
+# MSTEST0049: Flow TestContext キャンセル トークンを使用する
+dotnet_diagnostic.MSTEST0049.severity = error
+# MSTEST0051: Assert.Throws には 1 つのステートメントのみを含める必要があります
+dotnet_diagnostic.MSTEST0051.severity = error
+# MSTEST0054: TestContext.CancellationToken からのキャンセル トークンを使用する
+dotnet_diagnostic.MSTEST0054.severity = error
+# MSTEST0058: catch ブロック内の assert を避ける
+dotnet_diagnostic.MSTEST0058.severity = error
+# MSTEST0061: ランタイム チェックの代わりに OSCondition 属性を使用する
+dotnet_diagnostic.MSTEST0061.severity = error
 
-#endregion
+##endregion
