@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>System.IO.Pipelines, Text and String extension methods for esolang processors.</Description>
+    <PackageId>Esolang.Processor.Extensions.IO</PackageId>
+    <PackageTags>esolang;processor;io;pipelines;text;abstractions</PackageTags>
+    <RootNamespace>Esolang.Processor</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.6" />
+  </ItemGroup>
+
+</Project>

@@ -94,7 +94,7 @@ public static class TextProcessorExtensions
     /// <param name="output">The output text writer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The exit code.</returns>
-    [Obsolete("Use RunToEndAsync instead.")]
+    [Obsolete($"Use {nameof(RunToEndAsync)} instead.")]
     public static int RunToEnd(
         this IEventProcessor processor,
         TextReader? input = null,

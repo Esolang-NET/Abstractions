@@ -1,11 +1,5 @@
 <Solution>
-  <Folder Name="/Processor.Abstractions.Tests/">
-    <Project Path="Processor.Abstractions.Tests/Esolang.Processor.Abstractions.Tests.csproj" />
-  </Folder>
-  <Folder Name="/Generator.Abstractions.Tests/">
-    <Project Path="Generator.Abstractions.Tests/Esolang.Generator.Abstractions.Tests.csproj" />
-  </Folder>
-  <Folder Name="/Processor.Abstractions/" />
+
   <Folder Name="/ソリューション項目/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
@@ -17,6 +11,9 @@
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+    <Project Path="Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+    <Project Path="Processor.Extensions.IO\Esolang.Processor.Extensions.IO.csproj" />
   <Project Path="Generator.Abstractions\Esolang.Generator.Abstractions.csproj" />
+  <Project Path="Generator.Abstractions.Tests\Esolang.Generator.Abstractions.Tests.csproj" />
+  <Project Path="Processor.Extensions.IO.Tests\Esolang.Processor.Extensions.IO.Tests.csproj" /> 
 </Solution>

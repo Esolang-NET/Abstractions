@@ -95,6 +95,7 @@ public static class PipeProcessorExtensions
     /// <param name="output">The output pipe writer.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The exit code.</returns>
+    [Obsolete($"Use {nameof(RunToEndAsync)} instead.")]
     public static int RunToEnd(
         this IEventProcessor processor,
         PipeReader? input = null,

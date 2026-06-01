@@ -117,7 +117,9 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     public void RunToEnd_HandlesEndEvent()
     {
         var processor = new MockEventProcessor([new EndEvent(99)]);
+#pragma warning disable CS0618 // 型またはメンバーが旧型式です
         var exitCode = PipeProcessorExtensions.RunToEnd(processor, null, null, CancellationToken);
+#pragma warning restore CS0618 // 型またはメンバーが旧型式です
         Assert.AreEqual(99, exitCode);
     }
 

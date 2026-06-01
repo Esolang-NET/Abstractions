@@ -4,7 +4,7 @@
     <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net48;net9.0;net10.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Esolang.Processor.Tests</RootNamespace>
-    <AssemblyName>Esolang.Processor.Abstractions.Tests</AssemblyName>
+    <AssemblyName>Esolang.Processor.Extensions.IO.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,7 @@
     <PackageReference Include="MSTest.TestFramework" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="Microsoft.Testing.Platform.MSBuild" />
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.6" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
@@ -20,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Processor.Extensions.IO\Esolang.Processor.Extensions.IO.csproj" />
     <ProjectReference Include="..\Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
   </ItemGroup>
 

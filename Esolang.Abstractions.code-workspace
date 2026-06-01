@@ -17,8 +17,12 @@
 			"name": "Esolang.Processor.Abstractions"
 		},
 		{
-			"path": "Processor.Abstractions.Tests",
-			"name": "Esolang.Processor.Abstractions.Tests"
+			"path": "Processor.Extensions.IO",
+			"name": "Esolang.Processor.Extensions.IO"
+		},
+		{
+			"path": "Processor.Extensions.IO.Tests",
+			"name": "Esolang.Processor.Extensions.IO.Tests"
 		}
 	],
 	"settings": {
@@ -31,7 +35,9 @@
 			"Generator.Abstractions": true,
 			"Generator.Abstractions.Tests": true,
 			"Processor.Abstractions": true,
-			"Processor.Abstractions.Tests": true
+			"Processor.Abstractions.Tests": true,
+			"Processor.Extensions.IO": true,
+			"Processor.Extensions.IO.Tests": true
 		}
 	}
 }

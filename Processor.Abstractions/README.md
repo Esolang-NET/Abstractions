@@ -42,10 +42,9 @@ public interface IEventProcessor : IProcessor
 
 ## Extension Methods
 
-To facilitate running processors with common I/O types, we provide extension methods:
+To facilitate running processors, common extension methods are provided in separate packages:
 
-- **`TextProcessorExtensions`**: For `TextReader` and `TextWriter`.
-- **`PipeProcessorExtensions`**: For `PipeReader` and `PipeWriter`.
+- **`Esolang.Processor.Extensions.IO`**: Contains `TextProcessorExtensions` (for `TextReader`/`TextWriter`), `StringProcessorExtensions` (for `string`/`StringBuilder`), and `PipeProcessorExtensions` (for `PipeReader`/`PipeWriter`).
 
 ```csharp
 // Example using TextReader/TextWriter
@@ -53,6 +52,9 @@ await processor.RunToEndAsync(inputReader, outputWriter, cancellationToken);
 
 // Example using PipeReader/PipeWriter
 await processor.RunToEndAsync(inputPipe, outputPipe, cancellationToken);
+
+// Example using string input/output
+var result = await processor.RunToStringAsync(input: "your_input", cancellationToken);
 ```
 
 ## Usage Example
@@ -76,10 +78,6 @@ public class MyEsolangProcessor : IEventProcessor
 ## Target Framework
 
 - **netstandard2.0** — Compatible with .NET Framework 4.6.1+ and .NET Core 2.0+
-
-## Dependencies
-
-- **System.IO.Pipelines** — High-performance I/O primitives
 
 ## See Also
 
