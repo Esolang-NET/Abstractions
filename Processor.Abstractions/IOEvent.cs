@@ -5,7 +5,7 @@ namespace Esolang.Processor;
 /// </summary>
 public abstract class IOEvent
 {
-    IOEvent() {}
+    IOEvent() { }
 
     /// <summary>
     /// Creates an event requesting a character input.
