@@ -13,6 +13,14 @@
 			"name": "Esolang.Generator.Abstractions.Tests"
 		},
 		{
+			"path": "Interpreter.Abstractions",
+			"name": "Esolang.Interpreter.Abstractions"
+		},
+		{
+			"path": "Interpreter.Abstractions.Tests",
+			"name": "Esolang.Interpreter.Abstractions.Tests"
+		},
+		{
 			"path": "Processor.Abstractions",
 			"name": "Esolang.Processor.Abstractions"
 		},
@@ -34,6 +42,8 @@
 			"**/Thumbs.db": true,
 			"Generator.Abstractions": true,
 			"Generator.Abstractions.Tests": true,
+			"Interpreter.Abstractions": true,
+			"Interpreter.Abstractions.Tests": true,
 			"Processor.Abstractions": true,
 			"Processor.Abstractions.Tests": true,
 			"Processor.Extensions.IO": true,
