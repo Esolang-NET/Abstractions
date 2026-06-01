@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TargetFramework>net10.0</TargetFramework>
     <Description>Interpreter abstractions for Esolang processors.</Description>
     <PackageId>Esolang.Interpreter.Abstractions</PackageId>
     <PackageTags>esolang;interpreter;abstractions</PackageTags>
@@ -12,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
-    <ProjectReference Include="..\Processor.Extensions.IO\Esolang.Processor.Extensions.IO.csproj" />
   </ItemGroup>
 
 </Project>

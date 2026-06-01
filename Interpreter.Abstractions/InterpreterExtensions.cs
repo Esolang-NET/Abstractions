@@ -1,5 +1,5 @@
 using Esolang.Processor;
-using Esolang.Processor.Extensions.IO;
+using static Esolang.Processor.IOEvent;
 
 namespace Esolang.Interpreter;
 
@@ -18,34 +18,39 @@ public static class InterpreterExtensions
         this IEventProcessor processor,
         CancellationToken cancellationToken = default)
     {
-        // リダイレクトされていれば標準のReaderをそのまま使い、そうでなければカスタムリーダーを使う
-        using var reader = Console.IsInputRedirected ? Console.In : new InteractiveConsoleReader(cancellationToken);
-        return await processor.RunToEndAsync(reader, Console.Out, cancellationToken);
-    }
-}
-
-sealed class InteractiveConsoleReader(CancellationToken cancellationToken) : TextReader
-{
-    public override int Read()
-    {
-        // キーが押されるまでループ待機
-        while (!Console.KeyAvailable)
+        await foreach (var ioEvent in processor.RunAsyncEnumerable(cancellationToken))
         {
-            if (cancellationToken.IsCancellationRequested) return -1;
-            Thread.Sleep(10);
+            switch (ioEvent)
+            {
+                case InputCharEvent charInput:
+                    charInput.Write(await ReadCharFromConsoleAsync(cancellationToken));
+                    break;
+                case InputIntEvent intInput:
+                    var line = await ReadLineFromConsoleAsync(cancellationToken);
+                    if (int.TryParse(line, out var i))
+                    {
+                        intInput.Write(i);
+                    } 
+                    break;
+                case OutputCharEvent charOutput:
+                    Console.Write(charOutput.Output);
+                    break;
+                case OutputIntEvent intOutput:
+                    Console.Write(intOutput.Output);
+                    break;
+                case EndEvent end:
+                    return end.ExitCode;
+            }
         }
-        return Console.ReadKey(true).KeyChar;
+        return 0;
     }
 
-    public override async Task<int> ReadAsync(char[] buffer, int index, int count)
+    static async ValueTask<char> ReadCharFromConsoleAsync(CancellationToken ct)
     {
-        // 非同期コンテキストでも同様に待機
-        while (!Console.KeyAvailable)
-        {
-            if (cancellationToken.IsCancellationRequested) return -1;
-            await Task.Delay(10, cancellationToken);
-        }
-        buffer[index] = Console.ReadKey(true).KeyChar;
-        return 1;
+        ct.ThrowIfCancellationRequested();
+        var c = Console.In.Read();
+        return c == -1 ? '\0' : (char)c;
     }
+
+    static async ValueTask<string?> ReadLineFromConsoleAsync(CancellationToken ct) => await Console.In.ReadLineAsync(ct);
 }
