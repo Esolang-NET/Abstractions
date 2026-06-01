@@ -7,7 +7,7 @@
     <Description>System.IO.Pipelines, Text and String extension methods for esolang processors.</Description>
     <PackageId>Esolang.Processor.Extensions.IO</PackageId>
     <PackageTags>esolang;processor;io;pipelines;text;abstractions</PackageTags>
-    <RootNamespace>Esolang.Processor</RootNamespace>
+    <RootNamespace>Esolang.Processor.Extensions.IO</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
