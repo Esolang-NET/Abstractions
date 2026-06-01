@@ -1,8 +1,9 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Text;
+using static Esolang.Processor.IOEvent;
 
-namespace Esolang.Processor;
+namespace Esolang.Processor.Extensions.IO;
 
 /// <summary>
 /// Provides extension methods for running <see cref="IEventProcessor"/> using <see cref="PipeReader"/> and <see cref="PipeWriter"/>.

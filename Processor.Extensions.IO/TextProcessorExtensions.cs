@@ -1,6 +1,7 @@
 using System.Buffers;
+using static Esolang.Processor.IOEvent;
 
-namespace Esolang.Processor;
+namespace Esolang.Processor.Extensions.IO;
 
 /// <summary>
 /// Provides extension methods for running <see cref="IEventProcessor"/> using <see cref="TextReader"/> and <see cref="TextWriter"/>.
@@ -75,7 +76,7 @@ public static class TextProcessorExtensions
                     if (output is null)
                         throw new ArgumentNullException(nameof(output));
                     {
-                        await output.WriteLineAsync(intOutput.Output.ToString()).ConfigureAwait(false);
+                        await output.WriteAsync(intOutput.Output.ToString()).ConfigureAwait(false);
                         await output.FlushAsync().ConfigureAwait(false);
                     }
                     break;

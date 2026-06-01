@@ -1,6 +1,7 @@
 using System.Text;
+using static Esolang.Processor.IOEvent;
 
-namespace Esolang.Processor;
+namespace Esolang.Processor.Extensions.IO;
 
 /// <summary>
 /// Provides extension methods for running <see cref="IEventProcessor"/> using <see cref="string"/> and <see cref="StringBuilder"/>.

@@ -1,6 +1,9 @@
+using Esolang.Processor;
+using Esolang.Processor.Extensions.IO;
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Text;
+using static Esolang.Processor.IOEvent;
 
 namespace Esolang.Processor.Tests;
 
@@ -25,7 +28,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_HandlesEndEvent()
     {
-        var processor = new MockEventProcessor([new EndEvent(42)]);
+        var processor = new MockEventProcessor([End(42)]);
         var exitCode = await PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken);
         Assert.AreEqual(42, exitCode);
     }
@@ -34,7 +37,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_HandlesOutputCharEvent()
     {
-        var processor = new MockEventProcessor([new OutputCharEvent('A'), new EndEvent(0)]);
+        var processor = new MockEventProcessor([OutputChar('A'), End(0)]);
         var pipe = new Pipe();
 
         var readTask = Task.Run(async () =>
@@ -56,7 +59,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_HandlesOutputIntEvent()
     {
-        var processor = new MockEventProcessor([new OutputIntEvent(123), new EndEvent(0)]);
+        var processor = new MockEventProcessor([OutputInt(123), End(0)]);
         var pipe = new Pipe();
 
         var readTask = Task.Run(async () =>
@@ -80,8 +83,8 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     {
         var capturedChar = ' ';
         var processor = new MockEventProcessor([
-            new TestInputCharEvent(c => capturedChar = c),
-            new EndEvent(0)
+            InputChar(c => capturedChar = c),
+            End(0)
         ]);
 
         var pipe = new Pipe();
@@ -99,8 +102,8 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     {
         var capturedInt = 0;
         var processor = new MockEventProcessor([
-            new TestInputIntEvent(i => capturedInt = i),
-            new EndEvent(0)
+            InputInt(i => capturedInt = i),
+            End(0)
         ]);
 
         var pipe = new Pipe();
@@ -116,7 +119,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public void RunToEnd_HandlesEndEvent()
     {
-        var processor = new MockEventProcessor([new EndEvent(99)]);
+        var processor = new MockEventProcessor([End(99)]);
 #pragma warning disable CS0618 // 型またはメンバーが旧型式です
         var exitCode = PipeProcessorExtensions.RunToEnd(processor, null, null, CancellationToken);
 #pragma warning restore CS0618 // 型またはメンバーが旧型式です
@@ -127,7 +130,10 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullReader()
     {
-        var processor = new MockEventProcessor([new InputCharEventMock()]);
+        var capturedChar = ' ';
+        var processor = new MockEventProcessor([
+            InputChar(c => capturedChar = c)
+        ]);
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
     }
 
@@ -135,7 +141,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullWriter()
     {
-        var processor = new MockEventProcessor([new OutputCharEvent('A')]);
+        var processor = new MockEventProcessor([OutputChar('A')]);
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
     }
 
@@ -143,7 +149,10 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullReader_InputInt()
     {
-        var processor = new MockEventProcessor([new InputIntEventMock()]);
+        var capturedInt = 0;
+        var processor = new MockEventProcessor([
+            InputInt(i => capturedInt = i)
+        ]);
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
     }
 
@@ -151,28 +160,8 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
     [Timeout(Constants.Timeout, CooperativeCancellation = true)]
     public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullWriter_OutputInt()
     {
-        var processor = new MockEventProcessor([new OutputIntEvent(123)]);
+        var processor = new MockEventProcessor([OutputInt(123)]);
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
-    }
-
-    class TestInputCharEvent(Action<char> write) : InputCharEvent
-    {
-        public override void Write(char c) => write(c);
-    }
-
-    class TestInputIntEvent(Action<int> write) : InputIntEvent
-    {
-        public override void Write(int i) => write(i);
-    }
-
-    class InputCharEventMock : InputCharEvent
-    {
-        public override void Write(char c) { }
-    }
-
-    class InputIntEventMock : InputIntEvent
-    {
-        public override void Write(int i) { }
     }
 }
 
