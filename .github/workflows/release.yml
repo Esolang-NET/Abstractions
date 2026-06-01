@@ -17,28 +17,32 @@ permissions:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  NUGET_SOURCE: 'https://api.nuget.org/v3/index.json'
 
 jobs:
   publish:
     name: publish-packages-and-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref }}
           fetch-depth: 0
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Restore
-        run: dotnet restore --source "${{ env.NUGET_SOURCE }}"
+        run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
       - name: Pack
         run: |
+          dotnet pack Generator.Abstractions/Esolang.Generator.Abstractions.csproj -c Release -o artifacts/nuget
+          dotnet pack Interpreter.Abstractions/Esolang.Interpreter.Abstractions.csproj -c Release -o artifacts/nuget
           dotnet pack Processor.Abstractions/Esolang.Processor.Abstractions.csproj -c Release -o artifacts/nuget
+          dotnet pack Processor.Extensions.IO/Esolang.Processor.Extensions.IO.csproj -c Release -o artifacts/nuget
       - name: Publish to NuGet.org
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
@@ -93,7 +97,19 @@ jobs:
           set -euo pipefail
           tag="${{ github.event.inputs.tag || github.ref_name }}"
           shopt -s nullglob
-          gh release create "$tag" \
-            --repo "${{ github.repository }}" \
-            --title "$tag" \
-            artifacts/nuget/*.nupkg artifacts/nuget/*.snupkg || true
+          assets=(artifacts/nuget/*.nupkg artifacts/nuget/*.snupkg)
+          prerelease_flag=""
+          if [[ "$tag" == *-* ]]; then
+            prerelease_flag="--prerelease"
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            if [ ${#assets[@]} -gt 0 ]; then
+              gh release upload "$tag" "${assets[@]}" --clobber
+            fi
+          else
+            gh release create "$tag" \
+              "${assets[@]}" \
+              --title "$tag" \
+              --generate-notes \
+              $prerelease_flag
+          fi
