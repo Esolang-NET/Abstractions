@@ -10,8 +10,18 @@ dotnet add package Esolang.Generator.Abstractions
 
 ## Overview
 
-This package provides common interfaces, types, and binder utilities for implementing esolang code generators within the Esolang.NET ecosystem.
+This package provides common interfaces, types, and binder utilities for implementing esolang code generators and Roslyn-based source generators within the Esolang.NET ecosystem.
 
-## License
+## Key Components
 
-See [LICENSE](../LICENSE) for details.
+### MethodSignatureBinder
+
+The `MethodSignatureBinder` is a core utility that facilitates mapping esolang source code to C# partial method signatures. It handles the identification of input, output, and return patterns to generate appropriate boilerplate.
+
+### Binding Kinds
+
+To support diverse esolang execution models, several "Kind" enums are provided to classify method signatures:
+
+- **MethodInputKind**: Classifies how the esolang receives input (e.g., `TextReader`, `PipeReader`, `byte[]`, or none).
+- **MethodOutputKind**: Classifies how the esolang sends output (e.g., `TextWriter`, `PipeWriter`, `StringBuilder`, or none).
+- **MethodReturnKind**: Determines the method's return pattern (e.g., `void`, `string`, `int`, `Task`, `IEnumerable`, `IAsyncEnumerable`).

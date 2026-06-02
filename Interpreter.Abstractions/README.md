@@ -10,8 +10,17 @@ dotnet add package Esolang.Interpreter.Abstractions
 
 ## Overview
 
-This package provides common interfaces and extensions for implementing esolang interpreters within the Esolang.NET ecosystem.
+This package provides common interfaces and extensions for implementing esolang interpreters within the Esolang.NET ecosystem. It focuses on facilitating the execution of any `IEventProcessor` using standard console I/O.
 
-## License
+## Usage
 
-See [LICENSE](../LICENSE) for details.
+### Run to Console
+
+The `RunToConsoleAsync` extension method allows you to execute an `IEventProcessor` directly using `Console.In` and `Console.Out`.
+
+```csharp
+using Esolang.Interpreter;
+
+// Run your processor using standard I/O
+int exitCode = await processor.RunToConsoleAsync();
+```

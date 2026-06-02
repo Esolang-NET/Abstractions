@@ -40,6 +40,18 @@ public interface IEventProcessor : IProcessor
 }
 ```
 
+## IO Events
+
+The `IEventProcessor` communicates with the outside world through a stream of `IOEvent` objects.
+
+| Event Type | Purpose | Factory Method |
+| --- | --- | --- |
+| `InputCharEvent` | Requests a single character from the input. | `IOEvent.InputChar(Action<char> write)` |
+| `InputIntEvent` | Requests a single integer from the input. | `IOEvent.InputInt(Action<int> write)` |
+| `OutputCharEvent` | Sends a single character to the output. | `IOEvent.OutputChar(char output)` |
+| `OutputIntEvent` | Sends a single integer to the output. | `IOEvent.OutputInt(int output)` |
+| `EndEvent` | Signals the end of execution and provides an exit code. | `IOEvent.End(int exitCode)` |
+
 ## Extension Methods
 
 To facilitate running processors, common extension methods are provided in separate packages:
@@ -68,9 +80,12 @@ public class MyEsolangProcessor : IEventProcessor
 {
     public MyProgram Program { get; }
 
-    public IAsyncEnumerable<IOEvent> RunAsyncEnumerable(CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<IOEvent> RunAsyncEnumerable(CancellationToken cancellationToken = default)
     {
-        // Implement the execution logic yielding IOEvents (InputCharEvent, OutputCharEvent, etc.)
+        // Implement the execution logic yielding IOEvents
+        yield return IOEvent.OutputChar('H');
+        yield return IOEvent.OutputChar('i');
+        yield return IOEvent.End(0);
     }
 }
 ```
@@ -78,6 +93,7 @@ public class MyEsolangProcessor : IEventProcessor
 ## Target Framework
 
 - **netstandard2.0** — Compatible with .NET Framework 4.6.1+ and .NET Core 2.0+
+- **netstandard2.1** — Compatible with .NET Core 3.0+ and .NET 5+
 
 ## See Also
 
