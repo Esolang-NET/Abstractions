@@ -17,13 +17,16 @@ The format is based on Keep a Changelog.
 - **Esolang.Generator.Abstractions**:
     - Added comprehensive abstractions for method signature binding and type resolution.
     - Introduced `MethodSignatureBinder` for mapping esolang source to C# partial methods.
+    - Added `KnownTypes` for standardized Roslyn type resolution.
+    - Added `BindingError` record hierarchy for type-safe diagnostic reporting.
     - Added `MethodInputKind`, `MethodOutputKind`, and `MethodReturnKind` for signature classification.
 - **Esolang.Interpreter.Abstractions**:
     - Added new project for common interpreter utilities.
     - Introduced `RunToConsoleAsync` extension method for running processors with standard console I/O.
 - **Esolang.Processor.Extensions.IO**:
     - Extracted and standardized I/O extension methods into a dedicated project.
-    - Added support for `TextReader`/`TextWriter`, `string`/`StringBuilder`, and `System.IO.Pipelines` (`PipeReader`/`PipeWriter`).
+    - Added `RunToEndAsync` overloads for `TextReader`/`TextWriter`, `string`/`StringBuilder`, and `PipeReader`/`PipeWriter`.
+    - Added `RunToStringAsync` for capturing output as a string.
 - Enhanced testing infrastructure across all abstraction projects, significantly improving code coverage.
 
 ### Changed
