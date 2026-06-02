@@ -37,7 +37,7 @@ public static class TextProcessorExtensions
                             int read;
                             do
                             {
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                                 read = await input.ReadAsync(buffer.AsMemory(0, 1), cancellationToken).ConfigureAwait(false);
 #else
                                 read = await input.ReadAsync(buffer, 0, 1).ConfigureAwait(false);
@@ -57,7 +57,11 @@ public static class TextProcessorExtensions
                     if (input is null)
                         throw new ArgumentNullException(nameof(input));
                     {
-                        var inputString = await input.ReadLineAsync();
+#if NET7_0_OR_GREATER
+                        var inputString = await input.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+#else
+                        var inputString = await input.ReadLineAsync().ConfigureAwait(false);
+#endif
                         if (int.TryParse(inputString, out var i))
                         {
                             intInput.Write(i);
@@ -68,16 +72,50 @@ public static class TextProcessorExtensions
                     if (output is null)
                         throw new ArgumentNullException(nameof(output));
                     {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+                        var buffer =ArrayPool<char>.Shared.Rent(1);
+                        buffer.AsSpan(0, 1)[0] = charOutput.Output;
+                        try {
+                        await output.WriteAsync(buffer.AsMemory(0, 1), cancellationToken).ConfigureAwait(false);
+                        } finally
+                        {
+                            ArrayPool<char>.Shared.Return(buffer);
+                        }
+#else
                         await output.WriteAsync(charOutput.Output).ConfigureAwait(false);
+#endif
+#if NET8_0_OR_GREATER
+                        await output.FlushAsync(cancellationToken).ConfigureAwait(false);
+#else
                         await output.FlushAsync().ConfigureAwait(false);
+#endif
+
                     }
                     break;
                 case OutputIntEvent intOutput:
                     if (output is null)
                         throw new ArgumentNullException(nameof(output));
                     {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+                        var outputString = intOutput.Output.ToString();
+                        var span = intOutput.Output.ToString().AsSpan();
+                        var buffer =ArrayPool<char>.Shared.Rent(span.Length);
+                        var memory = buffer.AsMemory(0, span.Length);
+                        span.CopyTo(memory.Span);
+                        try {
+                            await output.WriteAsync(memory, cancellationToken).ConfigureAwait(false);
+                        } finally
+                        {
+                            ArrayPool<char>.Shared.Return(buffer);
+                        }
+#else
                         await output.WriteAsync(intOutput.Output.ToString()).ConfigureAwait(false);
+#endif
+#if NET8_0_OR_GREATER
+                        await output.FlushAsync(cancellationToken).ConfigureAwait(false);
+#else 
                         await output.FlushAsync().ConfigureAwait(false);
+#endif
                     }
                     break;
                 case EndEvent endEvent:
