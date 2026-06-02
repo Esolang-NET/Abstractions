@@ -6,6 +6,12 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+## [2.0.2] - 2026-06-02
+
+### Fix
+
+- **Esolang.Processor.Abstractions**: remove unnecessary PackageReference for System.Buffers
+
 ## [2.0.1] - 2026-06-02
 
 ### Fix
