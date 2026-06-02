@@ -10,5 +10,17 @@
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Processor.Extensions.IO.Tests/">
+    <Project Path="Processor.Extensions.IO.Tests/Esolang.Processor.Extensions.IO.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Interpreter.Abstractions.Tests/">
+    <Project Path="Interpreter.Abstractions.Tests/Esolang.Interpreter.Abstractions.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Generator.Abstractions.Tests/">
+    <Project Path="Generator.Abstractions.Tests/Esolang.Generator.Abstractions.Tests.csproj" />
+  </Folder>
   <Project Path="Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+  <Project Path="Processor.Extensions.IO\Esolang.Processor.Extensions.IO.csproj" />
+  <Project Path="Generator.Abstractions\Esolang.Generator.Abstractions.csproj" />
+  <Project Path="Interpreter.Abstractions\Esolang.Interpreter.Abstractions.csproj" />
 </Solution>

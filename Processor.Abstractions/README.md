@@ -10,105 +10,82 @@ dotnet add package Esolang.Processor.Abstractions
 
 ## Overview
 
-This package provides common interfaces for implementing esolang processors (interpreters) with consistent execution patterns.
+This package provides common interfaces and extension methods for implementing esolang processors (interpreters) based on an event-driven I/O model.
 
-## Interfaces
+## Core Interfaces
 
 ### IProcessor\<TProgram\>
 
 Base interface that holds a parsed program.
 
 ```csharp
-public interface IProcessor<TProgram>
+public interface IProcessor<TProgram> : IProcessor
 {
-    /// <summary>Parsed program instance.</summary>
+    /// <summary>The parsed program.</summary>
     TProgram Program { get; }
 }
 ```
 
-### ITextProcessor\<TProgram\>
+### IEventProcessor
 
-Execution interface using `TextReader` and `TextWriter` for input/output.
+Execution interface based on a stream of I/O events.
 
 ```csharp
-public interface ITextProcessor<TProgram> : IProcessor<TProgram>
+public interface IEventProcessor : IProcessor
 {
-    /// <summary>Execute the program synchronously and return exit code.</summary>
-    int RunToEnd(
-        TextReader? input = null,
-        TextWriter? output = null,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>Execute the program asynchronously and return exit code.</summary>
-    ValueTask<int> RunToEndAsync(
-        TextReader? input = null,
-        TextWriter? output = null,
-        CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Executes the processor and returns an asynchronous stream of I/O events.
+    /// </summary>
+    IAsyncEnumerable<IOEvent> RunAsyncEnumerable(CancellationToken cancellationToken = default);
 }
 ```
 
-### IPipeProcessor\<TProgram\>
+## IO Events
 
-Execution interface using `PipeReader` and `PipeWriter` for high-performance I/O.
+The `IEventProcessor` communicates with the outside world through a stream of `IOEvent` objects.
+
+| Event Type | Purpose | Factory Method |
+| --- | --- | --- |
+| `InputCharEvent` | Requests a single character from the input. | `IOEvent.InputChar(Action<char> write)` |
+| `InputIntEvent` | Requests a single integer from the input. | `IOEvent.InputInt(Action<int> write)` |
+| `OutputCharEvent` | Sends a single character to the output. | `IOEvent.OutputChar(char output)` |
+| `OutputIntEvent` | Sends a single integer to the output. | `IOEvent.OutputInt(int output)` |
+| `EndEvent` | Signals the end of execution and provides an exit code. | `IOEvent.End(int exitCode)` |
+
+## Extension Methods
+
+To facilitate running processors, common extension methods are provided in separate packages:
+
+- **`Esolang.Processor.Extensions.IO`**: Contains `TextProcessorExtensions` (for `TextReader`/`TextWriter`), `StringProcessorExtensions` (for `string`/`StringBuilder`), and `PipeProcessorExtensions` (for `PipeReader`/`PipeWriter`).
 
 ```csharp
-public interface IPipeProcessor<TProgram> : IProcessor<TProgram>
-{
-    /// <summary>Execute the program synchronously and return exit code.</summary>
-    int RunToEnd(
-        PipeReader input,
-        PipeWriter output,
-        CancellationToken cancellationToken = default);
+// Example using TextReader/TextWriter
+await processor.RunToEndAsync(inputReader, outputWriter, cancellationToken);
 
-    /// <summary>Execute the program asynchronously and return exit code.</summary>
-    ValueTask<int> RunToEndAsync(
-        PipeReader input,
-        PipeWriter output,
-        CancellationToken cancellationToken = default);
-}
+// Example using PipeReader/PipeWriter
+await processor.RunToEndAsync(inputPipe, outputPipe, cancellationToken);
+
+// Example using string input/output
+var result = await processor.RunToStringAsync(input: "your_input", cancellationToken);
 ```
 
 ## Usage Example
 
-Implement these interfaces in your processor:
+Implement `IEventProcessor` in your processor:
 
 ```csharp
 using Esolang.Processor;
-using System.IO.Pipelines;
 
-public class MyEsolangProcessor : ITextProcessor<MyProgram>, IPipeProcessor<MyProgram>
+public class MyEsolangProcessor : IEventProcessor
 {
     public MyProgram Program { get; }
 
-    public MyEsolangProcessor(MyProgram program)
+    public async IAsyncEnumerable<IOEvent> RunAsyncEnumerable(CancellationToken cancellationToken = default)
     {
-        Program = program;
-    }
-
-    // Text-based I/O
-    public int RunToEnd(TextReader? input = null, TextWriter? output = null, CancellationToken cancellationToken = default)
-    {
-        // Execute program with text I/O, return exit code
-        return 0;
-    }
-
-    public ValueTask<int> RunToEndAsync(TextReader? input = null, TextWriter? output = null, CancellationToken cancellationToken = default)
-    {
-        // Async variant
-        return new ValueTask<int>(0);
-    }
-
-    // Pipe-based I/O
-    public int RunToEnd(PipeReader input, PipeWriter output, CancellationToken cancellationToken = default)
-    {
-        // Execute program with pipe I/O, return exit code
-        return 0;
-    }
-
-    public ValueTask<int> RunToEndAsync(PipeReader input, PipeWriter output, CancellationToken cancellationToken = default)
-    {
-        // Async variant
-        return new ValueTask<int>(0);
+        // Implement the execution logic yielding IOEvents
+        yield return IOEvent.OutputChar('H');
+        yield return IOEvent.OutputChar('i');
+        yield return IOEvent.End(0);
     }
 }
 ```
@@ -116,10 +93,7 @@ public class MyEsolangProcessor : ITextProcessor<MyProgram>, IPipeProcessor<MyPr
 ## Target Framework
 
 - **netstandard2.0** — Compatible with .NET Framework 4.6.1+ and .NET Core 2.0+
-
-## Dependencies
-
-- **System.IO.Pipelines** — High-performance I/O primitives
+- **netstandard2.1** — Compatible with .NET Core 3.0+ and .NET 5+
 
 ## See Also
 

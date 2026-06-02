@@ -5,8 +5,32 @@
 			"name": "root"
 		},
 		{
+			"path": "Generator.Abstractions",
+			"name": "Esolang.Generator.Abstractions"
+		},
+		{
+			"path": "Generator.Abstractions.Tests",
+			"name": "Esolang.Generator.Abstractions.Tests"
+		},
+		{
+			"path": "Interpreter.Abstractions",
+			"name": "Esolang.Interpreter.Abstractions"
+		},
+		{
+			"path": "Interpreter.Abstractions.Tests",
+			"name": "Esolang.Interpreter.Abstractions.Tests"
+		},
+		{
 			"path": "Processor.Abstractions",
 			"name": "Esolang.Processor.Abstractions"
+		},
+		{
+			"path": "Processor.Extensions.IO",
+			"name": "Esolang.Processor.Extensions.IO"
+		},
+		{
+			"path": "Processor.Extensions.IO.Tests",
+			"name": "Esolang.Processor.Extensions.IO.Tests"
 		}
 	],
 	"settings": {
@@ -16,7 +40,14 @@
 			"**/.hg": true,
 			"**/.DS_Store": true,
 			"**/Thumbs.db": true,
+			"Generator.Abstractions": true,
+			"Generator.Abstractions.Tests": true,
+			"Interpreter.Abstractions": true,
+			"Interpreter.Abstractions.Tests": true,
 			"Processor.Abstractions": true,
+			"Processor.Abstractions.Tests": true,
+			"Processor.Extensions.IO": true,
+			"Processor.Extensions.IO.Tests": true
 		}
 	}
 }

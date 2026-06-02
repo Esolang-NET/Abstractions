@@ -1,4 +1,4 @@
-name: build
+name: build and test
 
 on:
   push:
@@ -12,35 +12,38 @@ on:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  NUGET_SOURCE: 'https://api.nuget.org/v3/index.json'
 
 jobs:
-  build:
-    name: build-${{matrix.os}}
+  build-and-test:
+
+    name: build-and-test-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Install dependencies
-      run: dotnet restore --source "${{ env.NUGET_SOURCE }}"
-
+      run: dotnet restore
+      
     - name: Build
       run: dotnet build --no-restore
+    
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
 
     - name: Pack
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         dotnet pack -o artifacts/
-
-    - uses: actions/upload-artifact@v4
+      
+    - uses: actions/upload-artifact@v7
       if: ${{ matrix.os == 'ubuntu-latest' }}
       with:
         name: artifacts

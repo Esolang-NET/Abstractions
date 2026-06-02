@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Common abstraction interfaces for implementing esolang interpreters, facilitating integration with the unified processor model.</Description>
+    <PackageId>Esolang.Interpreter.Abstractions</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>esolang;interpreter;abstractions;interface;execution;runtime</PackageTags>
+    <RootNamespace>Esolang.Interpreter</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="./README.md" Pack="true" PackagePath="\" />
+    <None Include="../CHANGELOG.md" Pack="true" PackagePath="\" />
+    <None Include="../LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
