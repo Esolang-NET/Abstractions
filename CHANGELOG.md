@@ -10,13 +10,28 @@ The format is based on Keep a Changelog.
 
 ### Added
 
-- **Esolang.Generator.Abstractions**: Added comprehensive abstractions for method signature binding and type resolution.
-- **Esolang.Interpreter.Abstractions**: Added new common abstractions for esolang interpreters.
-- **Esolang.Processor.Extensions.IO**: Extracted and standardized IO extension methods (supporting `TextReader`, `TextWriter`, and `System.IO.Pipelines`) into a dedicated project.
+- **Esolang.Processor.Abstractions**:
+    - Introduced `IEventProcessor` for a unified, event-driven execution model.
+    - Added `IOEvent` and its subtypes (`InputChar`, `InputInt`, `OutputChar`, `OutputInt`, `End`) to represent I/O operations.
+    - Added `IProcessor` as a non-generic base interface.
+- **Esolang.Generator.Abstractions**:
+    - Added comprehensive abstractions for method signature binding and type resolution.
+    - Introduced `MethodSignatureBinder` for mapping esolang source to C# partial methods.
+    - Added `MethodInputKind`, `MethodOutputKind`, and `MethodReturnKind` for signature classification.
+- **Esolang.Interpreter.Abstractions**:
+    - Added new project for common interpreter utilities.
+    - Introduced `RunToConsoleAsync` extension method for running processors with standard console I/O.
+- **Esolang.Processor.Extensions.IO**:
+    - Extracted and standardized I/O extension methods into a dedicated project.
+    - Added support for `TextReader`/`TextWriter`, `string`/`StringBuilder`, and `System.IO.Pipelines` (`PipeReader`/`PipeWriter`).
 - Enhanced testing infrastructure across all abstraction projects, significantly improving code coverage.
 
 ### Changed
 
+- **Esolang.Processor.Abstractions** (Breaking Changes):
+    - Removed `ITextProcessor<TProgram>` and `IPipeProcessor<TProgram>` interfaces in favor of the event-driven `IEventProcessor`.
+    - Modernized interfaces to use `IAsyncEnumerable<IOEvent>` for execution.
+    - Standardized naming and namespaces.
 - Updated `.editorconfig` with stricter C# style and MSTest diagnostic rules.
 
 ## [1.0.0] - 2026-05-07
