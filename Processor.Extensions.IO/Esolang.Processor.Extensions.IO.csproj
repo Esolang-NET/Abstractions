@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Comprehensive I/O extension methods for IEventProcessor, supporting TextReader/Writer, System.IO.Pipelines, and string-based execution.</Description>
+    <PackageId>Esolang.Processor.Extensions.IO</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>esolang;processor;io;pipelines;text;string;extensions;abstractions</PackageTags>
+    <RootNamespace>Esolang.Processor.Extensions.IO</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Processor.Abstractions\Esolang.Processor.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="./README.md" Pack="true" PackagePath="\" />
+    <None Include="../CHANGELOG.md" Pack="true" PackagePath="\" />
+    <None Include="../LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

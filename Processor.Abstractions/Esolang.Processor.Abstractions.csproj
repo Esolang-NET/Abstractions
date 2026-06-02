@@ -1,16 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Description>Unified processor abstractions for esolang execution.</Description>
+    <Description>Core interfaces and unified abstractions for esolang execution models, providing event-driven I/O processing standards.</Description>
     <PackageId>Esolang.Processor.Abstractions</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>esolang;processor;abstractions;interface;execution;event-driven;io</PackageTags>
+    <RootNamespace>Esolang.Processor</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Pipelines" />
+    <PackageReference Include="System.Buffers" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+      <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
   </ItemGroup>
 
   <ItemGroup>

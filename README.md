@@ -1,57 +1,59 @@
 # Esolang.Abstractions
 
-Shared abstraction interfaces for Esolang.NET projects (Funge-98, Brainfuck, Piet).
+[![.NET](https://github.com/Esolang-NET/Abstractions/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Esolang-NET/Abstractions/actions/workflows/dotnet.yml)
+
+Unified abstractions and interfaces for the Esolang.NET ecosystem.
 
 ## Overview
 
-This repository provides common abstractions used across multiple esolang interpreter and code generator projects:
+This repository provides common abstractions used across multiple esolang interpreter and code generator projects such as Funge-98, Brainfuck, and Piet. It defines a unified model for execution, I/O processing, and source generation.
 
-- **Esolang.Funge** — Funge-98 parser, processor, and generator
-- **Esolang.Brainfuck** — Brainfuck interpreter and generator
-- **Esolang.Piet** — Piet parser, processor, and generator
+## Choose Package
 
-## Packages
+| Want to do | Package |
+| --- | --- |
+| Create code generators or binders | [Esolang.Generator.Abstractions](./Generator.Abstractions/README.md) |
+| Implement a new esolang interpreter | [Esolang.Interpreter.Abstractions](./Interpreter.Abstractions/README.md) |
+| Define core execution and I/O models | [Esolang.Processor.Abstractions](./Processor.Abstractions/README.md) |
+| Add I/O extensions (Text, Pipelines, etc.) | [Esolang.Processor.Extensions.IO](./Processor.Extensions.IO/README.md) |
 
-### Esolang.Processor.Abstractions
-
-Unified processor abstractions for esolang execution.
+## Install
 
 ```bash
+dotnet add package Esolang.Generator.Abstractions
+dotnet add package Esolang.Interpreter.Abstractions
 dotnet add package Esolang.Processor.Abstractions
+dotnet add package Esolang.Processor.Extensions.IO
 ```
 
-Provides:
+## NuGet
 
-- **`IProcessor<TProgram>`** — Base interface holding a parsed program
-- **`ITextProcessor<TProgram>`** — Execution via `TextReader`/`TextWriter`
-- **`IPipeProcessor<TProgram>`** — Execution via `PipeReader`/`PipeWriter`
+| Project | NuGet | Summary |
+| --- | --- | --- |
+| [Esolang.Generator.Abstractions](./Generator.Abstractions/README.md) | [![NuGet: Esolang.Generator.Abstractions](https://img.shields.io/nuget/v/Esolang.Generator.Abstractions?logo=nuget&label=2.0.0)](https://www.nuget.org/packages/Esolang.Generator.Abstractions/) | Code generator and Roslyn binder abstractions. |
+| [Esolang.Interpreter.Abstractions](./Interpreter.Abstractions/README.md) | [![NuGet: Esolang.Interpreter.Abstractions](https://img.shields.io/nuget/v/Esolang.Interpreter.Abstractions?logo=nuget&label=2.0.0)](https://www.nuget.org/packages/Esolang.Interpreter.Abstractions/) | Base abstractions for interpreters. |
+| [Esolang.Processor.Abstractions](./Processor.Abstractions/README.md) | [![NuGet: Esolang.Processor.Abstractions](https://img.shields.io/nuget/v/Esolang.Processor.Abstractions?logo=nuget&label=2.0.0)](https://www.nuget.org/packages/Esolang.Processor.Abstractions/) | Core processor and I/O event abstractions. |
+| [Esolang.Processor.Extensions.IO](./Processor.Extensions.IO/README.md) | [![NuGet: Esolang.Processor.Extensions.IO](https://img.shields.io/nuget/v/Esolang.Processor.Extensions.IO?logo=nuget&label=2.0.0)](https://www.nuget.org/packages/Esolang.Processor.Extensions.IO/) | I/O extensions for event processors. |
 
-#### Usage
+## Framework Support
 
-```csharp
-using Esolang.Processor;
+| Project | Target frameworks |
+| --- | --- |
+| Esolang.Generator.Abstractions | netstandard2.0, netstandard2.1 |
+| Esolang.Interpreter.Abstractions | net10.0 |
+| Esolang.Processor.Abstractions | netstandard2.0, netstandard2.1 |
+| Esolang.Processor.Extensions.IO | netstandard2.0, netstandard2.1 |
 
-// Implement in your processor
-public class MyProcessor : ITextProcessor<MyProgram>
-{
-    public MyProgram Program { get; }
+## Changelog
 
-    public int RunToEnd(TextReader? input = null, TextWriter? output = null, CancellationToken ct = default)
-    {
-        // Execute program and return exit code
-    }
+- [CHANGELOG](./CHANGELOG.md)
 
-    public ValueTask<int> RunToEndAsync(TextReader? input = null, TextWriter? output = null, CancellationToken ct = default)
-    {
-        // Async variant
-    }
-}
-```
+## See also
 
-## Contributing
-
-Contributions are welcome. Please ensure code follows the project's `.editorconfig` and coding standards.
+- [Esolang.Funge](https://github.com/Esolang-NET/Funge) — Funge-98 implementation
+- [Esolang.Brainfuck](https://github.com/Esolang-NET/Brainfuck) — Brainfuck implementation
+- [Esolang.Piet](https://github.com/Esolang-NET/Piet) — Piet implementation
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

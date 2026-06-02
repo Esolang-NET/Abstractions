@@ -1,53 +1,30 @@
-using System.IO.Pipelines;
-
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Esolang.Processor;
-#pragma warning restore IDE0130
 
 /// <summary>
-/// Processor の共通基底。実行対象のプログラムを保持する。
+/// Common base interface for all processors.
 /// </summary>
-/// <typeparam name="TProgram">パース済みプログラムの型。</typeparam>
-public interface IProcessor<TProgram>
+public interface IProcessor { }
+
+/// <summary>
+/// Common base interface for processors that hold a program to be executed.
+/// </summary>
+/// <typeparam name="TProgram">The type of the parsed program.</typeparam>
+public interface IProcessor<TProgram> : IProcessor
 {
-    /// <summary>パース済みプログラム。</summary>
+    /// <summary>The parsed program.</summary>
     TProgram Program { get; }
 }
 
 /// <summary>
-/// <see cref="TextReader"/> / <see cref="TextWriter"/> ベースの実行 IF。
+/// Execution model based on a stream of I/O events.
 /// </summary>
-/// <typeparam name="TProgram">パース済みプログラムの型。</typeparam>
-public interface ITextProcessor<TProgram> : IProcessor<TProgram>
+public interface IEventProcessor : IProcessor
 {
-    /// <summary>プログラムを最後まで実行し、終了コードを返す。</summary>
-    int RunToEnd(
-        TextReader? input = null,
-        TextWriter? output = null,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>プログラムを最後まで非同期実行し、終了コードを返す。</summary>
-    ValueTask<int> RunToEndAsync(
-        TextReader? input = null,
-        TextWriter? output = null,
-        CancellationToken cancellationToken = default);
-}
-
-/// <summary>
-/// <see cref="PipeReader"/> / <see cref="PipeWriter"/> ベースの実行 IF。
-/// </summary>
-/// <typeparam name="TProgram">パース済みプログラムの型。</typeparam>
-public interface IPipeProcessor<TProgram> : IProcessor<TProgram>
-{
-    /// <summary>プログラムを最後まで実行し、終了コードを返す。</summary>
-    int RunToEnd(
-        PipeReader input,
-        PipeWriter output,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>プログラムを最後まで非同期実行し、終了コードを返す。</summary>
-    ValueTask<int> RunToEndAsync(
-        PipeReader input,
-        PipeWriter output,
+    /// <summary>
+    /// Executes the processor and returns a stream of I/O events.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>An asynchronous stream of I/O events.</returns>
+    IAsyncEnumerable<IOEvent> RunAsyncEnumerable(
         CancellationToken cancellationToken = default);
 }
