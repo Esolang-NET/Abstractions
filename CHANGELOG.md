@@ -6,6 +6,13 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-06-02
+
+### Fix
+
+- **Esolang.Interpreter.Abstractions** / **Esolang.Processor.Abstractions** / **Esolang.Processor.Extensions.IO** : 
+   - add AOT compatibility settings for net10.0 target framework
+
 ## [2.0.0] - 2026-06-02
 
 ### Added
@@ -48,6 +55,7 @@ The format is based on Keep a Changelog.
 - Both text and pipe processors return exit codes (`int`) from execution.
 - Support for optional `CancellationToken` on all execution methods.
 
-[Unreleased]: https://github.com/Esolang-NET/Abstractions/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/Esolang-NET/Abstractions/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/Esolang-NET/Abstractions/tree/v2.0.1
 [2.0.0]: https://github.com/Esolang-NET/Abstractions/tree/v2.0.0
 [1.0.0]: https://github.com/Esolang-NET/Abstractions/tree/v1.0.0
