@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Comprehensive I/O extension methods for IEventProcessor, supporting TextReader/Writer, System.IO.Pipelines, and string-based execution.</Description>
@@ -9,6 +9,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>esolang;processor;io;pipelines;text;string;extensions;abstractions</PackageTags>
     <RootNamespace>Esolang.Processor.Extensions.IO</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net10.0'">
+    <IsAotCompatible>true</IsAotCompatible>
+    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
   </PropertyGroup>
 
   <ItemGroup>

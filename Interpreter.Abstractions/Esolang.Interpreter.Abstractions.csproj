@@ -7,6 +7,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>esolang;interpreter;abstractions;interface;execution;runtime</PackageTags>
     <RootNamespace>Esolang.Interpreter</RootNamespace>
+    <IsAotCompatible>true</IsAotCompatible>
+    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
   </PropertyGroup>
 
   <ItemGroup>
