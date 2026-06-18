@@ -4,8 +4,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>14</LangVersion>
     <AssemblyVersion>2.0.0.2</AssemblyVersion>
-    <FileVersion>2.0.2.2</FileVersion>
-    <Version>2.0.2</Version>
+    <FileVersion>2.0.3.3</FileVersion>
+    <VersionPrefix>2.0.3</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <PackageProjectUrl>https://github.com/Esolang-NET/Abstractions/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Esolang-NET/Abstractions.git</RepositoryUrl>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
