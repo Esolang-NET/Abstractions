@@ -30,7 +30,7 @@ public static class InterpreterExtensions
                     if (int.TryParse(line, out var i))
                     {
                         intInput.Write(i);
-                    } 
+                    }
                     break;
                 case OutputCharEvent charOutput:
                     Console.Write(charOutput.Output);
