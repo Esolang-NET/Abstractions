@@ -52,7 +52,7 @@ public class InterpreterExtensionsTests
             var exitCode = await processor.RunToConsoleAsync(cancellationToken: CancellationToken);
 
             await Assert.That(exitCode).IsEqualTo(0);
-            await Assert.That(output.ToString()).IsEqualTo($"A123piyo piyo{Environment.NewLine}neko neko{Environment.NewLine}inu inu");
+            await Assert.That($"{output}".Replace("\r\n", "\n").Replace("\r", "\n")).IsEqualTo($"A123piyo piyo\nneko neko\ninu inu");
             await Assert.That(capturedChar).IsEqualTo('B');
             await Assert.That(capturedInt).IsEqualTo(456);
             await Assert.That(capturedLine).IsEqualTo("neko neko");
