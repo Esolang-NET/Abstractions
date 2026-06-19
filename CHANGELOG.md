@@ -6,6 +6,8 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+## [2.0.3] - 2026-06-19
+
 - **Esolang.Processor.Abstractions**: add InputLineEvent and InputStringEvent, OutputLineEvent, OutputStringEvent to IOEvent.
 
 ## [2.0.2] - 2026-06-02
@@ -63,7 +65,8 @@ The format is based on Keep a Changelog.
 - Both text and pipe processors return exit codes (`int`) from execution.
 - Support for optional `CancellationToken` on all execution methods.
 
-[Unreleased]: https://github.com/Esolang-NET/Abstractions/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/Esolang-NET/Abstractions/compare/v2.0.3...HEAD
+[2.0.3]: https://github.com/Esolang-NET/Abstractions/tree/v2.0.3
 [2.0.2]: https://github.com/Esolang-NET/Abstractions/tree/v2.0.2
 [2.0.1]: https://github.com/Esolang-NET/Abstractions/tree/v2.0.1
 [2.0.0]: https://github.com/Esolang-NET/Abstractions/tree/v2.0.0
