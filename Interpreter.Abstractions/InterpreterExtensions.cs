@@ -30,13 +30,25 @@ public static class InterpreterExtensions
                     if (int.TryParse(line, out var i))
                     {
                         intInput.Write(i);
-                    } 
+                    }
+                    break;
+                case InputLineEvent lineInput:
+                    lineInput.Write(await ReadLineFromConsoleAsync(cancellationToken) ?? string.Empty);
+                    break;
+                case InputStringEvent stringInput:
+                    stringInput.Write(await ReadLineFromConsoleAsync(cancellationToken) ?? string.Empty);
                     break;
                 case OutputCharEvent charOutput:
                     Console.Write(charOutput.Output);
                     break;
                 case OutputIntEvent intOutput:
                     Console.Write(intOutput.Output);
+                    break;
+                case OutputLineEvent lineOutput:
+                    Console.WriteLine(lineOutput.Output);
+                    break;
+                case OutputStringEvent stringOutput:
+                    Console.Write(stringOutput.Output);
                     break;
                 case EndEvent end:
                     return end.ExitCode;

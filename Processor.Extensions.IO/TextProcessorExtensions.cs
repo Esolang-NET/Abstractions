@@ -28,8 +28,12 @@ public static class TextProcessorExtensions
             switch (ioEvent)
             {
                 case InputCharEvent charInput:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(input, nameof(input));
+#else
                     if (input is null)
                         throw new ArgumentNullException(nameof(input));
+#endif
                     {
                         var buffer = ArrayPool<char>.Shared.Rent(1);
                         try
@@ -54,8 +58,12 @@ public static class TextProcessorExtensions
                     }
                     break;
                 case InputIntEvent intInput:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(input, nameof(input));
+#else
                     if (input is null)
                         throw new ArgumentNullException(nameof(input));
+#endif
                     {
 #if NET7_0_OR_GREATER
                         var inputString = await input.ReadLineAsync(cancellationToken).ConfigureAwait(false);
@@ -69,14 +77,18 @@ public static class TextProcessorExtensions
                     }
                     break;
                 case OutputCharEvent charOutput:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(output, nameof(output));
+#else
                     if (output is null)
                         throw new ArgumentNullException(nameof(output));
+#endif
                     {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                         var buffer =ArrayPool<char>.Shared.Rent(1);
                         buffer.AsSpan(0, 1)[0] = charOutput.Output;
                         try {
-                        await output.WriteAsync(buffer.AsMemory(0, 1), cancellationToken).ConfigureAwait(false);
+                            await output.WriteAsync(buffer.AsMemory(0, 1), cancellationToken).ConfigureAwait(false);
                         } finally
                         {
                             ArrayPool<char>.Shared.Return(buffer);
@@ -93,8 +105,12 @@ public static class TextProcessorExtensions
                     }
                     break;
                 case OutputIntEvent intOutput:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(output, nameof(output));
+#else
                     if (output is null)
                         throw new ArgumentNullException(nameof(output));
+#endif
                     {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                         var outputString = intOutput.Output.ToString();

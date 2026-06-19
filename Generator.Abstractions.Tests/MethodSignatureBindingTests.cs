@@ -1,35 +1,34 @@
 namespace Esolang.Generator.Tests;
 
-[TestClass]
 public class MethodSignatureBindingTests
 {
-    [TestMethod]
-    public void Properties_CheckCorrectly()
+    [Test]
+    public async Task Properties_CheckCorrectly()
     {
         // IsAsync: Task 系
         var bindingTask = new MethodSignatureBinding(MethodReturnKind.Task, MethodInputKind.None, MethodOutputKind.None, "", "", null, null, false, []);
-        Assert.IsTrue(bindingTask.IsAsync);
+        await Assert.That(bindingTask.IsAsync).IsTrue();
 
         // IsAsync: ValueTask 系
         var bindingValueTask = new MethodSignatureBinding(MethodReturnKind.ValueTask, MethodInputKind.None, MethodOutputKind.None, "", "", null, null, false, []);
-        Assert.IsTrue(bindingValueTask.IsAsync);
+        await Assert.That(bindingValueTask.IsAsync).IsTrue();
 
         // IsEnumerable
         var bindingEnum = new MethodSignatureBinding(MethodReturnKind.IEnumerableByte, MethodInputKind.None, MethodOutputKind.None, "", "", null, null, false, []);
-        Assert.IsTrue(bindingEnum.IsEnumerable);
-        Assert.IsFalse(bindingEnum.IsAsync);
+        await Assert.That(bindingEnum.IsEnumerable).IsTrue();
+        await Assert.That(bindingEnum.IsAsync).IsFalse();
 
         // IsAsyncEnumerable
         var bindingAsyncEnum = new MethodSignatureBinding(MethodReturnKind.IAsyncEnumerableByte, MethodInputKind.None, MethodOutputKind.None, "", "", null, null, false, []);
-        Assert.IsTrue(bindingAsyncEnum.IsAsyncEnumerable);
-        Assert.IsTrue(bindingAsyncEnum.IsAsync);
+        await Assert.That(bindingAsyncEnum.IsAsyncEnumerable).IsTrue();
+        await Assert.That(bindingAsyncEnum.IsAsync).IsTrue();
 
         // HasExplicitInput
         var bindingInput = new MethodSignatureBinding(MethodReturnKind.Void, MethodInputKind.String, MethodOutputKind.None, "s", "", null, null, false, []);
-        Assert.IsTrue(bindingInput.HasExplicitInput);
+        await Assert.That(bindingInput.HasExplicitInput).IsTrue();
 
         // HasExplicitOutput
         var bindingOutput = new MethodSignatureBinding(MethodReturnKind.Void, MethodInputKind.None, MethodOutputKind.TextWriter, "", "w", null, null, false, []);
-        Assert.IsTrue(bindingOutput.HasExplicitOutput);
+        await Assert.That(bindingOutput.HasExplicitOutput).IsTrue();
     }
 }

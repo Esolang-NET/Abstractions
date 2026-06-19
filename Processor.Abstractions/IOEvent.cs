@@ -22,6 +22,20 @@ public abstract class IOEvent
     public static InputIntEvent InputInt(Action<int> write) => new(write);
 
     /// <summary>
+    /// Creates an event requesting a string line input.
+    /// </summary>
+    /// <param name="write">The action to write the input string line to the processor.</param>
+    /// <returns>An event requesting a string line input.</returns>
+    public static InputLineEvent InputLine(Action<string> write) => new(write);
+
+    /// <summary>
+    /// Creates an event requesting a string input.
+    /// </summary>
+    /// <param name="write">The action to write the input string to the processor.</param>
+    /// <returns>An event requesting a string input.</returns>
+    public static InputStringEvent InputString(Action<string> write) => new(write);
+
+    /// <summary>
     /// Creates an event that outputs a character.
     /// </summary>
     /// <param name="output">The character to output.</param>
@@ -34,6 +48,20 @@ public abstract class IOEvent
     /// <param name="output">The integer to output.</param>
     /// <returns>An event that outputs an integer.</returns>
     public static OutputIntEvent OutputInt(int output) => new(output);
+
+    /// <summary>
+    /// Creates an event that outputs a string line.
+    /// </summary>
+    /// <param name="output">The string line to output.</param>
+    /// <returns>An event that outputs a string line.</returns>
+    public static OutputLineEvent OutputLine(string output) => new(output);
+
+    /// <summary>
+    /// Creates an event that outputs a string.
+    /// </summary>
+    /// <param name="output">The string to output.</param>
+    /// <returns>An event that outputs a string.</returns>
+    public static OutputStringEvent OutputString(string output) => new(output);
 
     /// <summary>
     /// Creates an event indicating the end of execution.
@@ -68,6 +96,34 @@ public abstract class IOEvent
     }
 
     /// <summary>
+    /// Represents an event requesting a string line input.
+    /// </summary>
+    /// <param name="write">The action to write the string line to the processor.</param>
+    public sealed class InputLineEvent(Action<string> write) : IOEvent
+    {
+        /// <summary>
+        /// Write the input string line to the processor.
+        /// </summary>
+        /// <param name="l">The input line string.</param>
+        public void Write(string l) => write(l);
+    }
+
+    /// <summary>
+    /// Represents an event requesting a string input.
+    /// </summary>
+    /// <param name="write">The action to write the string to the processor.</param>
+    public sealed class InputStringEvent(Action<string> write) : IOEvent
+    {
+        /// <summary>
+        /// Write the input string to the processor.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        public void Write(string s) => write(s);
+    }
+
+
+
+    /// <summary>
     /// Represents an event that outputs a character.
     /// </summary>
     /// <param name="Output">The character to output.</param>
@@ -89,6 +145,30 @@ public abstract class IOEvent
         /// The integer to output.
         /// </summary>
         public int Output { get; } = Output;
+    }
+
+    /// <summary>
+    /// Represents an event that outputs a string line.
+    /// </summary>
+    /// <param name="Output">The string line to output.</param>
+    public sealed class OutputLineEvent(string Output) : IOEvent
+    {
+        /// <summary>
+        /// The string line to output.
+        /// </summary>
+        public string Output { get; } = Output;
+    }
+
+    /// <summary>
+    /// Represents an event that outputs a string.
+    /// </summary>
+    /// <param name="Output">The string to output.</param>
+    public sealed class OutputStringEvent(string Output) : IOEvent
+    {
+        /// <summary>
+        /// The string to output.
+        /// </summary>
+        public string Output { get; } = Output;
     }
 
     /// <summary>

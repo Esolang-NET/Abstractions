@@ -30,8 +30,12 @@ public static class PipeProcessorExtensions
             switch (ev)
             {
                 case InputCharEvent inputChar:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(input, nameof(input));
+#else
                     if (input == null)
                         throw new ArgumentNullException(nameof(input));
+#endif
                     var result = await input.ReadAtLeastAsync(1, cancellationToken);
                     var buffer = ArrayPool<byte>.Shared.Rent(1);
                     try
@@ -50,8 +54,12 @@ public static class PipeProcessorExtensions
                     }
                     break;
                 case InputIntEvent inputInt:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(input, nameof(input));
+#else
                     if (input == null)
                         throw new ArgumentNullException(nameof(input));
+#endif
                     var result2 = await input.ReadAtLeastAsync(1, cancellationToken);
                     var buffer2 = ArrayPool<byte>.Shared.Rent(1);
                     try
@@ -70,14 +78,22 @@ public static class PipeProcessorExtensions
                     }
                     break;
                 case OutputCharEvent outputChar:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(output, nameof(output));
+#else
                     if (output == null)
                         throw new ArgumentNullException(nameof(output));
+#endif
                     output.Write(Encoding.UTF8.GetBytes([outputChar.Output]));
                     await output.FlushAsync(cancellationToken);
                     break;
                 case OutputIntEvent outputInt:
+#if NET7_0_OR_GREATER
+                    ArgumentNullException.ThrowIfNull(output, nameof(output));
+#else
                     if (output == null)
                         throw new ArgumentNullException(nameof(output));
+#endif
                     output.Write(Encoding.UTF8.GetBytes(outputInt.Output.ToString()));
                     await output.FlushAsync(cancellationToken);
                     break;

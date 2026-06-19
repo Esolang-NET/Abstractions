@@ -3,14 +3,10 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Esolang.Generator.Tests;
 
-[TestClass]
-public class NullableTest(TestContext TestContext)
+public class NullableTest
 {
-#pragma warning disable MSTEST0054 // TestContext.CancellationTokenSource.Token の代わりに TestContext.CancellationToken を使用する
-    CancellationToken CancellationToken => TestContext.CancellationTokenSource.Token;
-#pragma warning restore MSTEST0054 // TestContext.CancellationTokenSource.Token の代わりに TestContext.CancellationToken を使用する
-    [TestMethod]
-    public void CheckNullableContext()
+    [Test]
+    public async Task CheckNullableContext(CancellationToken CancellationToken)
     {
         var compilation = CSharpCompilation.Create("Test",
             [CSharpSyntaxTree.ParseText("class C {}", cancellationToken: CancellationToken)],
@@ -18,6 +14,6 @@ public class NullableTest(TestContext TestContext)
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         // デフォルトは Disable であるはず
-        Assert.AreEqual(NullableContextOptions.Disable, compilation.Options.NullableContextOptions);
+        await Assert.That(compilation.Options.NullableContextOptions).IsEqualTo(NullableContextOptions.Disable);
     }
 }
