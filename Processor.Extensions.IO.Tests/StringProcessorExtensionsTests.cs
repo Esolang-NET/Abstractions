@@ -1,15 +1,11 @@
 using Esolang.Processor;
 using Esolang.Processor.Extensions.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
 
 namespace Esolang.Processor.Tests;
 
-[TestClass]
-public class StringProcessorExtensionsTests(TestContext TestContext)
+public class StringProcessorExtensionsTests
 {
-    CancellationToken CancellationToken => TestContext.CancellationToken;
-
     class MockEventProcessor(List<IOEvent> events) : IEventProcessor
     {
         public async IAsyncEnumerable<IOEvent> RunAsyncEnumerable([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -22,9 +18,9 @@ public class StringProcessorExtensionsTests(TestContext TestContext)
         }
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public async Task RunToStringAsync_ReturnsCorrectOutput()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToStringAsync_ReturnsCorrectOutput(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([
             IOEvent.OutputChar('H'),
@@ -34,12 +30,12 @@ public class StringProcessorExtensionsTests(TestContext TestContext)
 
         var result = await StringProcessorExtensions.RunToStringAsync(processor, null, CancellationToken);
 
-        Assert.AreEqual("Hi", result);
+        await Assert.That(result).IsEqualTo("Hi");
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public void RunToString_ReturnsCorrectOutput()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToString_ReturnsCorrectOutput(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([
             IOEvent.OutputChar('A'),
@@ -50,19 +46,19 @@ public class StringProcessorExtensionsTests(TestContext TestContext)
 #pragma warning disable CS0618
         var result = StringProcessorExtensions.RunToString(processor, null, CancellationToken);
 #pragma warning restore CS0618
-        Assert.AreEqual("AB", result);
+        await Assert.That(result).IsEqualTo("AB");
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesOutputCharEvent()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToEndAsync_HandlesOutputCharEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([IOEvent.OutputChar('A'), IOEvent.End(0)]);
         var output = new StringBuilder();
 
         var exitCode = await StringProcessorExtensions.RunToEndAsync(processor, null, output, CancellationToken);
 
-        Assert.AreEqual("A", output.ToString());
-        Assert.AreEqual(0, exitCode);
+        await Assert.That(output.ToString()).IsEqualTo("A");
+        await Assert.That(exitCode).IsEqualTo(0);
     }
 }

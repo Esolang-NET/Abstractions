@@ -7,10 +7,8 @@ using static Esolang.Processor.IOEvent;
 
 namespace Esolang.Processor.Tests;
 
-[TestClass]
-public class PipeProcessorExtensionsTests(TestContext TestContext)
+public class PipeProcessorExtensionsTests
 {
-    CancellationToken CancellationToken => TestContext.CancellationToken;
 
     class MockEventProcessor(List<IOEvent> events) : IEventProcessor
     {
@@ -24,18 +22,18 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         }
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesEndEvent()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_HandlesEndEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([End(42)]);
         var exitCode = await PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken);
-        Assert.AreEqual(42, exitCode);
+        await Assert.That(exitCode).IsEqualTo(42);
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesOutputCharEvent()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_HandlesOutputCharEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([OutputChar('A'), End(0)]);
         var pipe = new Pipe();
@@ -44,7 +42,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         {
             var result = await pipe.Reader.ReadAsync(CancellationToken);
             var content = Encoding.UTF8.GetString(result.Buffer.ToArray());
-            Assert.AreEqual("A", content);
+            await Assert.That(content).IsEqualTo("A");
             pipe.Reader.AdvanceTo(result.Buffer.End);
             pipe.Reader.Complete();
         }, CancellationToken);
@@ -52,12 +50,12 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         var exitCode = await PipeProcessorExtensions.RunToEndAsync(processor, null, pipe.Writer, CancellationToken);
 
         await readTask;
-        Assert.AreEqual(0, exitCode);
+        await Assert.That(exitCode).IsEqualTo(0);
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesOutputIntEvent()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_HandlesOutputIntEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([OutputInt(123), End(0)]);
         var pipe = new Pipe();
@@ -66,7 +64,7 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         {
             var result = await pipe.Reader.ReadAsync(CancellationToken);
             var content = Encoding.UTF8.GetString(result.Buffer.ToArray());
-            Assert.AreEqual("123", content);
+            await Assert.That(content).IsEqualTo("123");
             pipe.Reader.AdvanceTo(result.Buffer.End);
             pipe.Reader.Complete();
         }, CancellationToken);
@@ -74,12 +72,12 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         var exitCode = await PipeProcessorExtensions.RunToEndAsync(processor, null, pipe.Writer, CancellationToken);
 
         await readTask;
-        Assert.AreEqual(0, exitCode);
+        await Assert.That(exitCode).IsEqualTo(0);
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesInputCharEvent()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_HandlesInputCharEvent(CancellationToken CancellationToken)
     {
         var capturedChar = ' ';
         var processor = new MockEventProcessor([
@@ -93,12 +91,12 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
 
         await PipeProcessorExtensions.RunToEndAsync(processor, pipe.Reader, null, CancellationToken);
 
-        Assert.AreEqual('X', capturedChar);
+        await Assert.That(capturedChar).IsEqualTo('X');
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesInputIntEvent()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_HandlesInputIntEvent(CancellationToken CancellationToken)
     {
         var capturedInt = 0;
         var processor = new MockEventProcessor([
@@ -112,23 +110,23 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
 
         await PipeProcessorExtensions.RunToEndAsync(processor, pipe.Reader, null, CancellationToken);
 
-        Assert.AreEqual(123, capturedInt);
+        await Assert.That(capturedInt).IsEqualTo(123);
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public void RunToEnd_HandlesEndEvent()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEnd_HandlesEndEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([End(99)]);
 #pragma warning disable CS0618 // 型またはメンバーが旧型式です
         var exitCode = PipeProcessorExtensions.RunToEnd(processor, null, null, CancellationToken);
 #pragma warning restore CS0618 // 型またはメンバーが旧型式です
-        Assert.AreEqual(99, exitCode);
+        await Assert.That(exitCode).IsEqualTo(99);
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullReader()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullReader(CancellationToken CancellationToken)
     {
         var capturedChar = ' ';
         var processor = new MockEventProcessor([
@@ -137,17 +135,17 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullWriter()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullWriter(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([OutputChar('A')]);
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullReader_InputInt()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullReader_InputInt(CancellationToken CancellationToken)
     {
         var capturedInt = 0;
         var processor = new MockEventProcessor([
@@ -156,9 +154,9 @@ public class PipeProcessorExtensionsTests(TestContext TestContext)
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());
     }
 
-    [TestMethod]
-    [Timeout(Constants.Timeout, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullWriter_OutputInt()
+    [Test]
+    [Timeout(Constants.Timeout)]
+    public async Task RunToEndAsync_ThrowsArgumentNullExceptionOnNullWriter_OutputInt(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([OutputInt(123)]);
         await Assert.ThrowsAsync<ArgumentNullException>(() => PipeProcessorExtensions.RunToEndAsync(processor, null, null, CancellationToken).AsTask());

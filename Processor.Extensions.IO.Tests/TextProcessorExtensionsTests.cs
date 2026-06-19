@@ -1,17 +1,13 @@
 using Esolang.Processor;
 using Esolang.Processor.Extensions.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
 using static Esolang.Processor.IOEvent;
 
 namespace Esolang.Processor.Tests;
 
-[TestClass]
-public class TextProcessorExtensionsTests(TestContext TestContext)
+public class TextProcessorExtensionsTests
 {
-    CancellationToken CancellationToken => TestContext.CancellationToken;
-
     class MockEventProcessor(List<IOEvent> events) : IEventProcessor
     {
         public async IAsyncEnumerable<IOEvent> RunAsyncEnumerable([System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -24,35 +20,35 @@ public class TextProcessorExtensionsTests(TestContext TestContext)
         }
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesOutputCharEvent()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToEndAsync_HandlesOutputCharEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([OutputChar('A'), End(0)]);
         using var output = new StringWriter();
 
         var exitCode = await TextProcessorExtensions.RunToEndAsync(processor, null, output, CancellationToken);
 
-        Assert.AreEqual("A", output.ToString());
-        Assert.AreEqual(0, exitCode);
+        await Assert.That(output.ToString()).IsEqualTo("A");
+        await Assert.That(exitCode).IsEqualTo(0);
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesOutputIntEvent()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToEndAsync_HandlesOutputIntEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([OutputInt(123), End(0)]);
         using var output = new StringWriter();
 
         var exitCode = await TextProcessorExtensions.RunToEndAsync(processor, null, output, CancellationToken);
 
-        Assert.AreEqual("123", output.ToString());
-        Assert.AreEqual(0, exitCode);
+        await Assert.That(output.ToString()).IsEqualTo("123");
+        await Assert.That(exitCode).IsEqualTo(0);
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesInputCharEvent()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToEndAsync_HandlesInputCharEvent(CancellationToken CancellationToken)
     {
         var capturedChar = ' ';
         var processor = new MockEventProcessor([
@@ -63,12 +59,12 @@ public class TextProcessorExtensionsTests(TestContext TestContext)
 
         await TextProcessorExtensions.RunToEndAsync(processor, input, null, CancellationToken);
 
-        Assert.AreEqual('X', capturedChar);
+        await Assert.That(capturedChar).IsEqualTo('X');
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public async Task RunToEndAsync_HandlesInputIntEvent()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToEndAsync_HandlesInputIntEvent(CancellationToken CancellationToken)
     {
         var capturedInt = 0;
         var processor = new MockEventProcessor([
@@ -79,17 +75,17 @@ public class TextProcessorExtensionsTests(TestContext TestContext)
 
         await TextProcessorExtensions.RunToEndAsync(processor, input, null, CancellationToken);
 
-        Assert.AreEqual(123, capturedInt);
+        await Assert.That(capturedInt).IsEqualTo(123);
     }
 
-    [TestMethod]
-    [Timeout(2000, CooperativeCancellation = true)]
-    public void RunToEnd_HandlesEndEvent()
+    [Test]
+    [Timeout(2000)]
+    public async Task RunToEnd_HandlesEndEvent(CancellationToken CancellationToken)
     {
         var processor = new MockEventProcessor([End(88)]);
 #pragma warning disable CS0618
         var exitCode = TextProcessorExtensions.RunToEnd(processor, null, null, CancellationToken);
 #pragma warning restore CS0618
-        Assert.AreEqual(88, exitCode);
+        await Assert.That(exitCode).IsEqualTo(88);
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Esolang.Generator.Tests;
 
-[TestClass]
 public class KnownTypesTests
 {
     static Compilation CreateCompilation(string code)
@@ -27,61 +26,61 @@ public class KnownTypesTests
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
     }
 
-    [TestMethod]
-    public void Constructor_ResolvesSpecialTypes()
+    [Test]
+    public async Task Constructor_ResolvesSpecialTypes()
     {
         var compilation = CreateCompilation("class C {}");
         var knownTypes = new KnownTypes(compilation);
 
-        Assert.IsNotNull(knownTypes.String);
-        Assert.AreEqual(SpecialType.System_String, knownTypes.String.SpecialType);
-        Assert.IsNotNull(knownTypes.Byte);
-        Assert.AreEqual(SpecialType.System_Byte, knownTypes.Byte.SpecialType);
-        Assert.IsNotNull(knownTypes.Int32);
-        Assert.AreEqual(SpecialType.System_Int32, knownTypes.Int32.SpecialType);
+        Assert.NotNull(knownTypes.String);
+        await Assert.That(knownTypes.String.SpecialType).IsEqualTo(SpecialType.System_String);
+        Assert.NotNull(knownTypes.Byte);
+        await Assert.That(knownTypes.Byte.SpecialType).IsEqualTo(SpecialType.System_Byte);
+        Assert.NotNull(knownTypes.Int32);
+        await Assert.That(knownTypes.Int32.SpecialType).IsEqualTo(SpecialType.System_Int32);
     }
 
-    [TestMethod]
-    public void IsByte_ChecksCorrectly()
+    [Test]
+    public async Task IsByte_ChecksCorrectly()
     {
         var compilation = CreateCompilation("class C { byte b; }");
         var knownTypes = new KnownTypes(compilation);
         var byteType = compilation.GetSpecialType(SpecialType.System_Byte);
         var intType = compilation.GetSpecialType(SpecialType.System_Int32);
 
-        Assert.IsTrue(knownTypes.IsByte(byteType));
-        Assert.IsFalse(knownTypes.IsByte(intType));
-        Assert.IsFalse(knownTypes.IsByte(null));
+        await Assert.That(knownTypes.IsByte(byteType)).IsTrue();
+        await Assert.That(knownTypes.IsByte(intType)).IsFalse();
+        await Assert.That(knownTypes.IsByte(null)).IsFalse();
     }
 
-    [TestMethod]
-    public void IsInt32_ChecksCorrectly()
+    [Test]
+    public async Task IsInt32_ChecksCorrectly()
     {
         var compilation = CreateCompilation("class C { int i; }");
         var knownTypes = new KnownTypes(compilation);
         var intType = compilation.GetSpecialType(SpecialType.System_Int32);
         var byteType = compilation.GetSpecialType(SpecialType.System_Byte);
 
-        Assert.IsTrue(knownTypes.IsInt32(intType));
-        Assert.IsFalse(knownTypes.IsInt32(byteType));
-        Assert.IsFalse(knownTypes.IsInt32(null));
+        await Assert.That(knownTypes.IsInt32(intType)).IsTrue();
+        await Assert.That(knownTypes.IsInt32(byteType)).IsFalse();
+        await Assert.That(knownTypes.IsInt32(null)).IsFalse();
     }
 
-    [TestMethod]
-    public void IsTask_ChecksCorrectly()
+    [Test]
+    public async Task IsTask_ChecksCorrectly()
     {
         var compilation = CreateCompilation("using System.Threading.Tasks; class C { Task T() => Task.CompletedTask; }");
         var knownTypes = new KnownTypes(compilation);
         var taskType = knownTypes.Task;
 
-        Assert.IsNotNull(taskType);
-        Assert.IsTrue(knownTypes.IsTask(taskType));
-        Assert.IsFalse(knownTypes.IsTask(compilation.GetSpecialType(SpecialType.System_String)));
-        Assert.IsFalse(knownTypes.IsTask(null));
+        Assert.NotNull(taskType);
+        await Assert.That(knownTypes.IsTask(taskType)).IsTrue();
+        await Assert.That(knownTypes.IsTask(compilation.GetSpecialType(SpecialType.System_String))).IsFalse();
+        await Assert.That(knownTypes.IsTask(null)).IsFalse();
     }
 
-    [TestMethod]
-    public void IsString_NullableEnabledChecksCorrectly()
+    [Test]
+    public async Task IsString_NullableEnabledChecksCorrectly()
     {
         var compilation = CreateCompilation("""
             #nullable enable
@@ -91,13 +90,13 @@ public class KnownTypesTests
         var classC = compilation.GetTypeByMetadataName("C");
         var field = classC?.GetMembers("s").OfType<IFieldSymbol>().FirstOrDefault();
 
-        Assert.IsNotNull(field);
-        Assert.IsTrue(knownTypes.IsString(field.Type, isNullable: true));
-        Assert.IsFalse(knownTypes.IsString(field.Type, isNullable: false));
+        Assert.NotNull(field);
+        await Assert.That(knownTypes.IsString(field.Type, isNullable: true)).IsTrue();
+        await Assert.That(knownTypes.IsString(field.Type, isNullable: false)).IsFalse();
     }
 
-    [TestMethod]
-    public void IsString_NullableDisabledChecksCorrectly()
+    [Test]
+    public async Task IsString_NullableDisabledChecksCorrectly()
     {
         var compilation = CreateCompilation("""
             #nullable disable
@@ -107,13 +106,13 @@ public class KnownTypesTests
         var classC = compilation.GetTypeByMetadataName("C");
         var field = classC?.GetMembers("s").OfType<IFieldSymbol>().FirstOrDefault();
 
-        Assert.IsNotNull(field);
-        Assert.IsTrue(knownTypes.IsString(field.Type, isNullable: false));
-        Assert.IsFalse(knownTypes.IsString(field.Type, isNullable: true));
+        Assert.NotNull(field);
+        await Assert.That(knownTypes.IsString(field.Type, isNullable: false)).IsTrue();
+        await Assert.That(knownTypes.IsString(field.Type, isNullable: true)).IsFalse();
     }
 
-    [TestMethod]
-    public void IsTaskT_NullableChecksCorrectly()
+    [Test]
+    public async Task IsTaskT_NullableChecksCorrectly()
     {
         var compilation = CreateCompilation("""
             #nullable enable
@@ -128,18 +127,18 @@ public class KnownTypesTests
         var method1 = classC?.GetMembers("T1").OfType<IMethodSymbol>().FirstOrDefault();
         var method2 = classC?.GetMembers("T2").OfType<IMethodSymbol>().FirstOrDefault();
 
-        Assert.IsNotNull(method1);
-        Assert.IsNotNull(method2);
+        Assert.NotNull(method1);
+        Assert.NotNull(method2);
 
-        Assert.IsTrue(knownTypes.IsTaskT(method1.ReturnType, isNullable: false));
-        Assert.IsFalse(knownTypes.IsTaskT(method1.ReturnType, isNullable: true));
+        await Assert.That(knownTypes.IsTaskT(method1.ReturnType, isNullable: false)).IsTrue();
+        await Assert.That(knownTypes.IsTaskT(method1.ReturnType, isNullable: true)).IsFalse();
 
-        Assert.IsTrue(knownTypes.IsTaskT(method2.ReturnType, isNullable: true));
-        Assert.IsFalse(knownTypes.IsTaskT(method2.ReturnType, isNullable: false));
+        await Assert.That(knownTypes.IsTaskT(method2.ReturnType, isNullable: true)).IsTrue();
+        await Assert.That(knownTypes.IsTaskT(method2.ReturnType, isNullable: false)).IsFalse();
     }
 
-    [TestMethod]
-    public void IsValueTaskT_NullableChecksCorrectly()
+    [Test]
+    public async Task IsValueTaskT_NullableChecksCorrectly()
     {
         var compilation = CreateCompilation("""
             #nullable enable
@@ -154,13 +153,13 @@ public class KnownTypesTests
         var method1 = classC?.GetMembers("T1").OfType<IMethodSymbol>().FirstOrDefault();
         var method2 = classC?.GetMembers("T2").OfType<IMethodSymbol>().FirstOrDefault();
 
-        Assert.IsNotNull(method1);
-        Assert.IsNotNull(method2);
+        Assert.NotNull(method1);
+        Assert.NotNull(method2);
 
-        Assert.IsTrue(knownTypes.IsValueTaskT(method1.ReturnType, isNullable: false));
-        Assert.IsFalse(knownTypes.IsValueTaskT(method1.ReturnType, isNullable: true));
+        await Assert.That(knownTypes.IsValueTaskT(method1.ReturnType, isNullable: false)).IsTrue();
+        await Assert.That(knownTypes.IsValueTaskT(method1.ReturnType, isNullable: true)).IsFalse();
 
-        Assert.IsTrue(knownTypes.IsValueTaskT(method2.ReturnType, isNullable: true));
-        Assert.IsFalse(knownTypes.IsValueTaskT(method2.ReturnType, isNullable: false));
+        await Assert.That(knownTypes.IsValueTaskT(method2.ReturnType, isNullable: true)).IsTrue();
+        await Assert.That(knownTypes.IsValueTaskT(method2.ReturnType, isNullable: false)).IsFalse();
     }
 }
